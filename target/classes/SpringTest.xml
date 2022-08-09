@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- <bean name="student" class="Spring.spring1.Bean.Student" depends-on="card"/>
+    <bean name="card" class="Spring.spring1.Bean.Card"/> -->
+
+    <!-- <bean name="student" class="Spring.spring2.Bean.Student" autowire="byType">
+        <constructor-arg name="name" value="普京"/>
+        <constructor-arg name="age" value="50"/>
+    </bean>
+    <bean name="card" class="Spring.spring2.Bean.Card"/> -->
+
+    <!-- <bean name="student" class="Spring.spring3.Bean.Student">
+        <constructor-arg name="name" value="普京"/>
+        <constructor-arg name="age" value="50"/>
+    </bean>
+    <bean name="aopTest" class="Spring.spring3.aop.AopTest"/>
+    <aop:config>
+        <aop:aspect ref="aopTest">
+            <aop:pointcut id="stu1" expression="execution(* Spring.spring3.Bean.Student.say(String))"/>
+            <aop:after-returning method="after" pointcut-ref="stu1"/>
+            <aop:around method="around" pointcut-ref="stu1"/>
+        </aop:aspect>
+        <aop:aspect ref="aopTest">
+            <aop:pointcut id="stu2" expression="@annotation(Deprecated)"/>
+            <aop:before method="before" pointcut-ref="stu2"/>
+        </aop:aspect>
+    </aop:config> -->
+
+    <!-- <bean name="student" class="Spring.spring4.Bean.Student">
+        <constructor-arg name="name" value="普京"/>
+        <constructor-arg name="age" value="50"/>
+    </bean>
+    <bean name="aopTest" class="Spring.spring4.aop.AppAdvice"/>
+    <aop:config>
+        <aop:pointcut id="stu" expression="execution(* Spring.spring4.Bean.Student.say(String))"/>
+        <aop:advisor advice-ref="aopTest" pointcut-ref="stu"/>
+    </aop:config> -->
+
+</beans>
