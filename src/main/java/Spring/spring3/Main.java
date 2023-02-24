@@ -1,119 +1,224 @@
 package Spring.spring3;
 
-import Spring.spring3.Bean.Student;
+import Spring.spring3.entity.Student3;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * 面向切面AOP
- * 又是一个听起来很高大上的名词 AOP思想实际上就是: 在运行时 动态地将代码切入到指定方法 指定位置上的思想就是面向切面的编程
- * 也就是说 我们可以使用AOP来帮助我们在方法执行前执行之后 做一下额外的操作 实际上 就是代理
+ * 依赖注入
+ * 依赖注入(Dependency Injection DI)是一种设计模式 也是Spring框架的核心概念之一 现在我们已经了解了如何注册和使用一个Bean
+ * 但是这样远远不够 还记得我们一开始说的 消除类之间的强关联吗? 比如现在由一个教师接口:
  *
- * 通过AOP我们可以在保证原有业务不变的情况下 添加额外的动作 比如我们的某些方法执行完成之后 需要打印日志 那么这个时候 我们就可以使用AOP来帮助我们完成
- * 它可以批量地为这些方法添加动作 可以说 它相当于将我们原有的方法 在不改变源代码的基础上进行增强处理
- *
- * 相当于我们的整个业务流程 被直接斩断 并在断掉的位置添加了一个额外的操作 在连接起来 也就是在一个切点位置插入内容 它的原理实际上就是通过动态代理机制实现的
- * 我们在javaWeb阶段已经给大家讲解过动态代理了 不过Spring层并不是使用的JDK提供的动态代理 而是使用的第三方库实现 它能够以父类的形式代理 而不是接口
- *
- * 使用SpringAOP
- * Spring是支持AOP编程的框架之一 (实际上它整合了AspectJ框架的一部分) 要使用AOP我们需要先导入一个依赖:
- *                  <dependency>
- *                      <groupId>org.springframework</groupId>
- *                      <artifactId>spring-aspects</artifactId>
- *                      <version>5.3.13</version>
- *                  </dependency>
- * 那么 如何使用AOP呢 首先我们要明确 要实现AOP操作 我们需要知道这些内容:
- *      1 需要切入的类 类的哪个方法需要被切入
- *      2 切入之后需要执行什么动作
- *      3 是在方法执行前切入还是方法执行后切入
- *      4 如何告诉Spring需要进行切入
- *
- * 那么我们依次来看 首先需要解决问题是 找到需要切入的类:
- *                  // 分别在test方法执行前后切入
- *                  public int test(String str){
- *                      System.out.println("我是一个测试方法:" + str);
- *                      return str.length();
+ *                  public interface Teacher {
+ *                      void teach();
  *                  }
- * 现在我们希望在test方法执行前后添加我们的额外执行的内容 接着 我们来看看如何为方法执行前和执行后添加切入动作
- * 比如在我们想在方法返回之后 在执行我们的动作 首先定义我们要执行的操作:
- *                  public class AopTest {
  *
- *                      public void after(){
- *                          log.info("我是方法执行之后的日志");
- *                      }
+ * 具体的实现有两个:
  *
- *                      public void before(){
- *                          log.info("我是方法执行之前的日志");
+ *                  public class ArtTeacher implements Teacher {
+ *
+ *                      @Override
+ *                      public void teach() {
+ *                          System.out.println("我是美术老师 我教你画蒙娜丽莎");
  *                      }
  *
  *                  }
- * 那么 现在如何告诉Spring我们需要在方法执行之前和之后插入其他逻辑呢 首先我们将要进行AOP操作的类注册为Bean:
- *                  <bean name="student" class="Spring.spring3.Bean.Student"/>
- *                  <bean name="aopTest" class="Spring.spring3.aop.AopTest"/>
- * 一个是Student类 还有一个就是包含我们要切入方法的AopTest类 注册为Bean后 他们就交给Spring进行管理 这样Spring才能帮助我们完成AOP操作
  *
- * 接着 我们需要告诉Spring 我们需要添加切入点 首先将顶部修改为 引入aop相关标签:
- *                  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
- * 通过使用aop:config 来添加一个新的AOP配置:
- *                  <aop:config>
+ *                  public class ProgramTeacher implements Teacher {
  *
- *                  </aop:config>
- * 首先第一行 我们需要告诉Spring 我们要切入的是哪一个类的哪个或是哪些方法:
- *                  <aop:config>
- *                      <aop:pointcut id="stu" expression="execution(* Spring.spring3.Bean.Student.say(String))"/>
- *                  </aop:config>
- * 其中 expression属性的execution填写格式如下:
- *                  修饰符 包名.类名.方法名称(方法参数)
- *      > 修饰符 public protected private 包括返回值类型 static等等(使用*代表任意修饰符)
- *      > 包名 如com.test(代表全部 比如com.代表com包下的全部包)
- *      > 类名 使用*也可以代表包下的所有类
- *      > 方法名称 可以使用*代表全部方法
- *      > 方法参数 填写对应的参数即可 比如(String, String) 也可以使用*来代表任意一个参数 使用。。代表所有参数
+ *                      @Override
+ *                      public void teach() {
+ *                          System.out.println("我是编程老师 我教你学Rust");
+ *                      }
  *
- * 也可以使用其他属性来进行匹配 比如@annotation可以用于表示标记了哪些注解的方法被切入
+ *                  }
  *
- * 接着 我们需要为此方法添加一个执行前动作和一个执行后动作:
- *                  <aop:aspect>
- *                      <aop:before method="before" pointcut-ref="test"/>
- *                      <aop:after-returning method="after" pointcut-ref="test"/>
- *                  </aop:aspect>
- * 这样 我们就完成了全部的配置 现在来实验一下吧:
+ * 我们的学生一开始有一个老师教他 比如美术老师:
+ *
+ *                  public class Student3 {
+ *
+ *                      private Teacher teacher = new ArtTeacher();
+ *                      // 在以前 如果我们需要制定哪个老师教我们 直接new创建对应的对象就可以了
+ *                      public void study() {
+ *                          teacher.teach();
+ *                      }
+ *
+ *                  }
+ *
+ * 但是我们发现 如果美术老师不教了 现在来了一个其他的老师教学生 那么就需要去修改Student类的定义:
+ *
+ *                  public class Student {
+ *                      private Teacher teacher = new ProgramTeacher();
+ *                      ...
+ *                  }
+ *
+ * 可以想象一下 如果现在冒出来各种各样的类都需要这样去用Teacher 那么一旦Teacher的实现发生变化 会导致我们挨个对之前用到Teacher的类进行修改 这就很难受了
+ *
+ * 而有了依赖注入之后 Student中的Teacher成员变量 可以由IoC容器来选择一个合适的Teacher对象进行赋值 也就是说
+ * IoC容器在创建对象时 需要将我们预先给定的属性注入到对象中 非常简单 我们可以使用property标签来实现 我们将bean标签展开:
+ *
+ *                  <bean name="teacher" class="Spring.spring3.entity.ProgramTeacher"/>
+ *                  <bean name="student3" class="Spring.spring3.entity.Student3">
+ *                      <property name="teacher" ref="teacher"/>
+ *                  </bean>
+ *
+ * 同时我们还需要修改一下Student类 依赖注入要求对应的属性必须有一个set方法:
+ *
+ *                  public class Student {
+ *
+ *                      private Teacher teacher;
+ *                      // 要使用依赖注入 我们必须提供一个set方法(无论成员变量的访问权限是什么) 命名规则依然是驼峰命名法
+ *                      public void setTeacher(Teacher teacher) {
+ *                          this.teacher = teacher;
+ *                      }
+ *                      ...
+ *
+ *                  }
+ *
+ *                  https://img-blog.csdnimg.cn/img_convert/5a416209031f695f1b55da2639442cc4.png
+ *
+ * 使用property来指定需要注入的值或是一个Bean 这里我们选择ProgramTeacher 那么在使用时 Student类中得到的就是这个Bean的对象了:
+ *
  *                  Student student = context.getBean(Student.class);
- *                  student.say("马牛逼!!!");
+ *                  student.study();
  *
- * 我们发现 方法执行前后 分别调用了我们对应的方法 但是仅仅这样还是不能满足一些需求 在某些情况下 我们可以需求方法执行的一些参数 比如方法执行之后返回了什么 或是方法开始之前传入了什么参数等等
+ *      https://img-blog.csdnimg.cn/img_convert/2a4ef8eede357f7b58c75cd068b9da3e.png
  *
- * 这个时候 我们可以为我们切入的方法添加一个参数 通过此参数就可以快速获取切点位置的一些信息:
- *                  // 执行之前的方法
- *                  public void after(JoinPoint point){
- *                      System.out.println(Arrays.toString(point.getArgs())); // 获取传入方法的实参
- *                      log.info("我是方法执行之后的日志");
- *                      System.out.println(point.getThis()); // 获取执行方法的对象
+ * 可以看到 现在我们的Java代码中 没有出现任何的具体实现类信息(ArtTeacher, ProgramTeacher都没有出现) 取而代之的是那一堆xml配置
+ * 这样 就算我们切换老师的实现为另一个类 也不用去调用整个代码 只需要变动一下Bean的类型就可以:
+ *
+ *                  <!-- 只需要修改这里的class即可 现在改为ArtTeacher -->
+ *                  <bean name="teacher" class="Spring.spring3.entity.ArtTeacher"/>
+ *                  <bean name="student3" class="Spring.spring3.entity.Student3">
+ *                      <property name="teacher" ref="teacher"/>
+ *                  </bean>
+ *
+ * 这样 这个Bean的class就变成了新的类型 并且我们不需要再去调整其他位置的代码 再次启动程序:
+ *
+ *      https://img-blog.csdnimg.cn/img_convert/9b96562bc46dd527ca6bb7cae3f2a838.png
+ *
+ * 通过依赖注入 是不是开始逐渐感受到Spring为我们带来的便利了? 当然 依赖注入并不一定要注入其他的Bean 也可以是一个简单的值:
+ *
+ *                  <bean name="student3" class="Spring.spring3.entity.Student3">
+ *                      <property name="name" value="马牛逼"/>
+ *                  </bean>
+ *
+ * 直接使用value可以直接传入一个具体值
+ *
+ * 实际上 在很多情况下 类中的某些参数是在构造方法中就已经完成的初始化 而不是创建之后 比如:
+ *
+ *                  public class Student {
+ *                      private final Teacher teacher; // 构造方法中完成 所以说是一个final变量
+ *
+ *                      public Student(Teacher teacher) { // Teacher属性是在构造方法中完成的初始化
+ *                         this.teacher = teacher;
+ *                      }
+ *                      ...
  *                  }
- * 通过添加JoinPoint作为形参 Spring会自动给我们一个实现类对象 这样我们就能获取方法的一些信息了
  *
- * 最后我们在来看环绕方法 环绕方法相当于完全代理了此方法 它完全将此方法包含在中间 需要我们手动调用才可以执行此方法 并且我们可以直接获取更多的参数:
- *                  public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
- *                      System.out.println("方法执行前");
- *                      Object value = joinPoint.proceed();
- *                      System.out.println("方法执行完成 结果为: " +value);
- *                      return value;
+ * 我们前面说了 Bean实际上是由IoC容器进行创建的 但是现在我们修改了默认的无参构造 可以看到配置文件里面报错了:
+ *
+ *      https://img-blog.csdnimg.cn/img_convert/34d830b3576857ee1916bc4624c60d8a.png
+ *
+ * 很明显 是因为我们修改了构造方法 IoC容器默认只会调用无参构造 所以 我们需要指明一个可以用的构造方法 我们展开bean标签 添加一个constructor-arg标签:
+ *
+ *                  <bean name="teacher" class="Spring.spring3.entity.ArtTeacher"/>
+ *                  <bean name="student3" class="Spring.spring3.entity.Student3">
+ *                      <constructor-arg name="teacher" ref="teacher"/>
+ *                  </bean>
+ *
+ * 这里的constructor-arg就是构造方法的一个参数 这个参数可以写很多个 会自动匹配符号里面参数数量的构造方法 这里匹配的就是我们刚刚编写的需要一个参数的构造方法:
+ *
+ *      https://img-blog.csdnimg.cn/img_convert/9b96562bc46dd527ca6bb7cae3f2a838.png
+ *
+ * 通过这种方式 我们也能实现依赖注入 只不过现在我们将依赖注入的时机提前到了对象构造时
+ *
+ * 那要是出现这种情况呢? 现在我们的Student类型中是这样定义的:
+ *
+ *                  public class Student {
+ *                      private final String name;
+ *                      public Student(String name) {
+ *                          System.out.println("我是一号构造方法");
+ *                          this.name = name;
+ *                      }
+ *
+ *                      public Student(int age) {
+ *                          System.out.println("我是二号构造方法");
+ *                          this.name = String.valueOf(age)l
+ *                      }
  *                  }
- * 注意: 如果代理方法存在返回值 那么环绕方法也需要有一个返回值 通过proceed方法来执行代理的方法 也可以修改参数之后调用proceed(Object[]) 使用我们给定的参数再去执行:
- *                  System.out.println("方法执行前");
- *                  String text = joinPoint.getArgs()[0] + "伞兵一号";
- *                  Object value = joinPoint.proceed(new Object[]{text});
- *                  System.out.println("方法执行完成 结果为: " + value);
- *                  return value;
+ *
+ * 此时我们希望使用的是二号构造方法 那么怎么才能指定呢? 有两种方式 我们可以给标签添加类型:
+ *
+ *                  <constructor-arg value="1" type="int"/>
+ *
+ * 也可以指定为对应的参数名称 反正只要能够保证我们指定的参数匹配到目标构造方法即可:
+ *
+ *                  <constructor-arg value="1" name="age"/>
+ *
+ * 现在我们的类中出现了一个比较特殊的类型 它是一个集合类型:
+ *
+ *                  public class Student {
+ *
+ *                      private List<String> list;
+ *
+ *                      public void setList(List<String> list) {
+ *                          this.list = list
+ *                      }
+ *
+ *                  }
+ *
+ * 对于这种集合类型 有着特殊的支持:
+ *
+ *                  <bean name="student3" class="Spring.spring3.entity.Student3">
+ *                      <!-- 对于集合类型 我们可以直接使用标签编辑集合的默认值 -->
+ *                      <property name="list">
+ *                          <list>
+ *                              <value>AAA</value>
+ *                              <value>BBB</value>
+ *                              <value>CCC</value>
+ *                          </list>
+ *                      </property>
+ *                  </bean>
+ *
+ * 不仅仅是List, Map set这类常用集合类包括数组在内 都是支持这样编写的 比如Map类型 我们也可以使用entry来注入:
+ *
+ *                  <bean name="student3" class="com.test.bean.Student3">
+ *                      <property name="map">
+ *                          <map>
+ *                              <entry key="语文" value="100.0"/>
+ *                              <entry key="数学" value="80.0"/>
+ *                              <entry key="英语" value="92.5"/>
+ *                          </map>
+ *                      </property>
+ *                  </bean>
+ *
+ * 至此 我们就已经完成了两种依赖注入的学习:
+ *
+ *      > Setter依赖注入: 通过成员属性对应的set方法完成注入
+ *      > 构造方法依赖注入: 通过构造方法完成注入
  */
 public class Main {
 
-    public static void main(String[] args) {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("SpringTest.xml");
+    static void test1() {
 
-        Student student = context.getBean(Student.class);
-        //System.out.println(student.getClass());
-        student.say("马牛逼!!!");
-        //student.test();
+        ApplicationContext context = new ClassPathXmlApplicationContext("ApplicationFoundation.xml");
+
+        /*Student3 student = (Student3) context.getBean("student3");
+        student.study();*/
+
+        /*Student3 student = (Student3) context.getBean("student3");
+        student.study();*/
+
+        Student3 student = (Student3) context.getBean("student3");
+        System.out.println(student);
+
+    }
+
+    public static void main(String[] args) {
+
+        test1();
+
     }
 
 }

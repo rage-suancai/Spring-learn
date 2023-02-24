@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- <bean name="student1" class="Spring.spring1.entity.Student1"/> -->
+
+    <!-- <bean class="Spring.spring2.entity.Student2" scope="singleton" lazy-init="true"/> -->
+    <!-- <bean class="Spring.spring2.entity.ArtStudent"/> -->
+    <!-- <bean class="Spring.spring2.entity.SportStudent"/> -->
+    <!-- <bean name="art" class="Spring.spring2.entity.ArtStudent"/> -->
+    <!-- <bean name="sport" class="Spring.spring2.entity.SportStudent"/> -->
+
+    <!-- ><bean name="teacher" class="Spring.spring3.entity.ArtTeacher"/>
+    <bean name="student3" class="Spring.spring3.entity.Student3">
+        <property name="teacher" ref="teacher"/>
+        <property name="name" value="马牛逼"/>
+    </bean> -->
+    <!-- <bean name="teacher" class="Spring.spring3.entity.ProgramTeacher"/>
+    <bean name="student3" class="Spring.spring3.entity.Student3">
+        <constructor-arg name="teacher" ref="teacher"/>
+    </bean> -->
+    <!-- <bean name="teacher" class="Spring.spring3.entity.ArtTeacher"/>
+    <bean name="student3" class="Spring.spring3.entity.Student3">
+        <constructor-arg value="1" type="int"/>
+    </bean> -->
+    <bean name="student3" class="Spring.spring3.entity.Student3">
+        <property name="list">
+            <list>
+                <value>AAA</value>
+                <value>BBB</value>
+                <value>CCC</value>
+            </list>
+        </property>
+    </bean>
+
+
+
+</beans>

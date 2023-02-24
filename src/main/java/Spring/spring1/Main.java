@@ -1,104 +1,129 @@
 package Spring.spring1;
 
-import Spring.spring1.Bean.Student;
+import Spring.spring1.entity.Student1;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * 使用IoC容器
- * 首先一定要明确 使用Spring首要目的是为了使得软件项目进行解耦 而不是为了去简化代码 Spring并不是一个独立的框架 它实际上包含了很多的模块
- * 而我们首先要去学习的就是Core Container 也就是核心容器模块 Spring是一个非入侵式的框架 就像一个工具库一样 因此 我们只需要直接导入其依赖就可以使用了
- *
  * 第一个Spring项目
- * 我们创建一个新的Maven项目 并导入Spring框架的依赖 Spring框架的坐标:
+ * 首先一定要明确 使用Spring首要目的是为了使得软件进行解耦 而不是为了去简化代码 通过它 就可以更好的对我们的Beam进行管理 这一部分我们来体验一下Spring的基本使用
+ *
+ * Spring并不是一个独立的框架 它实际上包含了很多的模块:
+ *
+ *      https://img-blog.csdnimg.cn/img_convert/37d9e48e300d9993a46ce53a1291e24f.png
+ *
+ * 而我们首先要去学习的就是Core Container 也就是核心容器模块 只有了解了Spring的核心技术 我们才能真正认识这个框架为我们带来的便捷之处
+ *
  *                  <dependency>
  *                      <groupId>org.springframework</groupId>
  *                      <artifactId>spring-context</artifactId>
- *                      <version>5.3.13</version>
+ *                      <version>6.0.4</version>
  *                  </dependency>
- * 接着在resource中创建一个Spring配置文件 命名为SpringTest.xml 直接点击即可创建:
+ *
+ * 注意: 与旧版本教程不同的是 Spring6要求你使用的Java版本为17及以上 包括后面我们在学习SpringMVC时 要求Tomcat版本必须为10以上 这个依赖中包含了如下依赖:
+ *
+ *      https://img-blog.csdnimg.cn/img_convert/67ca44aefda4c42f66147b474941de53.png
+ *
+ * 这里出现的都是Spring核心相关的内容 如Beans Core Context SpEL以及非常关键的AOP框架 在本章中 我们都会进行讲解
+ *
+ *      如果在使用Spring框架的过程中出现如下警告:
+ *      12月 17, 2022 3:26:26 下午 org.springframework.core.LocalVariableTableParameterNameDiscoverer inspectClass
+ *      警告: Using deprecated '-debug' fallback for parameter name resolution. Compile the affected code with '-parameters' instead or avoid its introspection: XXXX
+ *
+ *      这是因为LocalVariableTableParameterNameDiscoverer在Spring6.0.1版本已经被标记为过时 并且即将移除 请在Maven配置文件中为编译插件添加-parameters编译参数:
+ *
+ *      <build>
+ *          <pluginManagement>
+ *                  <plugins>
+ *                      <plugin>
+ *                          <artifactId>maven-compiler-plugin</artifactId>
+ *                          <version>3.10.1</version>
+ *                          <configuration>
+ *                              <compilerArgs>
+ *                                  <arg>-parameters</arg>
+ *                              </compilerArgs>
+ *                          </configuration>
+ *                      </plugin>
+ *                  </plugins>
+ *          </pluginManagement>
+ *      </build>
+ *
+ *      没有此问题请无视这部分
+ *
+ * 这里我们就来尝试编写一个最简单的Spring项目 我们在前面已经讲过了 Spring会给我们提供IoC容器用于管理Bean
+ * 但是我们得先为这个容器编写一个配置文件 我们可以通过配置文件告诉容器需要管理哪些Bean已经Bean的属性 依赖关系等等
+ *
+ * 首先我们需要在resource中创建一个Spring配置文件(在resource中创建的文件 会在编译时被一起放到类路径下) 名为application.xml 直接右键点击即可创建:
+ *
  *                  <?xml version="1.0" encoding="UTF-8"?>
  *                  <beans xmlns="http://www.springframework.org/schema/beans"
- *                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- *                      xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+ *                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ *                         xsi:schemaLocation="http://www.springframework.org/schema/beans
+ *                          https://www.springframework.org/schema/beans/spring-beans.xsd">
  *
  *                  </beans>
- * 最后 在主方法中编写:
- *                  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("SpringTest.xml");
  *
- * 这样 一个最基本的Spring项目就创建完成了 接着我们来看看如何向IoC容器中注册javaBean 首先创建一个Student类:
- *                  // 注意 这里还用不到值注入 只需要包含成员属性即可 不用Getter/Setter
+ * 此时IDEA会提示我们没有为此文件配置应用程序上下文 这里我们只需要指定成当前项目就行了 当然配置这个只是为了代码提示和依赖关系快速查看 如果不进行配置也不会影响什么 程序依然可以正常运行:
+ *
+ *      https://img-blog.csdnimg.cn/img_convert/7be44bfc46b04a52592ba484642c486b.png
+ *
+ * 这里我们直接按照默认配置点确定就行了:
+ *
+ *      https://img-blog.csdnimg.cn/img_convert/2742d87823719194ad83a434fc737ad8.png
+ *
+ * Spring为我们提供了一个IoC容器 用于去存放我们需要使用的对象 我们可以将对象交给IoC容器进行管理 当我们需要使用对象时 就可以向IoC容器去索要 并由它来决定给我们哪一个对象
+ * 而我们如果需要使用Spring为我们提供的IoC容器 那么就需要创建一个应用程序上下文 它代表的就是IoC容器 它会负责实例化 配置和组装Bean:
+ *
+ *                  public static void main(String[] args) {
+ *                      // ApplicationContext是应用程序上下文的顶层接口 它有很多种实现
+ *                      // 因为这里使用的是XML配置文件 所以说我们就使用ClassPathXmlApplicationContext
+ *                      ApplicationContext context = new ClassPathXmlApplicationContext();
+ *                  }
+ *
+ * 比如现在我们要让IoC容器帮助我们管理一个Student对象(Bean) 当我们需要这个对象时在申请 那么就需要这样 首先先将Student类定义出来:
+ *
  *                  public class Student {
- *                      String name;
- *                      int age;
- *                  }
- * 最后在配置文件中添加这个bean:
- *                  <bean name="student" class="Spring.spring1.Bean.Student"/>
- * 现在 这个对象不需要我们再去生成了 而是由IoC容器来提供:
- *                  Student student = (Student) context.getBean("student");
- *                  System.out.println(student);
  *
- * 实际上 这里得到的Student对象是由Spring通过反射机制帮助我们创建的 初学者会非常疑惑 为什么要这样来创建对象 我们直接new一个不香吗
- * 为什么要交给IoC容器管理呢 在后面的学习中 我们再慢慢的进行体会
+ *                      public void hello() {
+ *                          System.out.println("Fuck World");
+ *                      }
  *
- * 将javaBean交给IoC容器管理
- * 通过前面的例子 我们发现只要将我们创建好的javaBean通过配置文件编写 即可将其交给IoC容器进行管理 那么我们来看看 一个javaBean的详细配置:
- *                  <bean name="student" class="Spring.spring1.Bean.Student"/>
- * 其中name属性(也可以是id属性) 全局唯一 不可出现重复的名称 我们发现 之前其实就是通过Bean的名称来向IoC容器索要对应的对象 也可以通过其他方式获取
- *
- * 我们现在为主方法中连续获取两个对象:
- *                  Student student1 = (Student) context.getBean("student");
- *                  Student student2 = (Student) context.getBean("student");
- *                  System.out.println(student1);
- *                  System.out.println(student2);
- * 我们发现两次获取到的实际上是同一个对象 也就是说 默认情况下 通过IoC容器进行管理的javaBean是单例模式的
- * 无论怎么获取始终为那一个对象 那么如何进行修改呢 只需要修改其作用域即可 添加scope属性:
- *                  <bean name="student" class="Spring.spring1.Bean.Student" scope="prototype"/>
- *
- * 通过将其设定为prototype(原型模式) 来使得每次都会创建一个新的对象 我们接着来观察一下 这两种模式下Bean的生命周期 我们给构造方法添加一个输出:
- *                  public Student(){
- *                      System.out.println("我被构造了");
- *                  }
- * 接着我们在main方法中打上断点来查看对象分别是在什么时候被构造的
- *
- * 我们发现 当Bean的作用域为单例模式 那么会在一开始就被创建 而处于原型模式下 只有在获取时才会被创造 也就是说 单例模式下 Bean会被IoC容器存储
- * 只要容器没有被销毁 那么此对象将一直存在 而原型模式才是相当于直接new了一个对象 并不会被保存
- *
- * 我们还可以通过配置文件 告诉创建一个对象需要执行此初始化方法 以及销毁一个对象的方法:
- *                  public void init(){
- *                      System.out.println("我是初始化方法");
  *                  }
  *
- *                  public void destroy(){
- *                      System.out.println("我是销毁方法");
+ * 既然现在要让别人帮忙管理对象 那么就不能再由我们自己去new这个对象了 而是编写对应的配置 我们打开刚刚创建的application.xml文件进行编辑 添加:
+ *
+ *                  <bean name="student" class="com.test.bean.Student"/>
+ *
+ * 这里我们就在配置文件中编写好了对应Bean的信息 之后容器就会根据这里的配置进行处理了
+ *
+ * 现在 这个对象不需要我们再去创建了 而是由IoC容器自动进行创建并提供 我们可以直接从上下文中获取到它为我们创建的对象:
+ *
+ *                  public static void main() {
+ *                      ApplicationContext context = new ClassPathXmlApplicationContext("ApplicationFoundation.xml");
+ *                      Student student = (Student) context.getBean("student"); // 使用getBean方法来获取对应的对象(Bean)
+ *                      student.hello();
  *                  }
  *
- *                  public Student(){
- *                      System.out.println("我被构造了");
- *                  }
+ * 实际上 这里得到的Student对象是由Spring通过反射机制帮助我们创建的 初学者会非常疑惑 为什么要这样来创建对象
+ * 我们直接new一个它不香吗? 为什么要交给IoC容器管理呢? 在后面的学习中 我们在慢慢进行体会
  *
- *                  Student student = (Student) context.getBean("student");
- *                  System.out.println(student);
- *                  context.close(); // 手动销毁容器
- * 最后在XML文件中编写配置:
- *                  <bean name="student" class="Spring.spring1.Bean.Student" init-method="init" destroy-method="destroy"/>
- * 接下来测试一下即可
- *
- * 我们还可以手动指定Bean的加载顺序 若某个Bean需要保证一定在另一个Bean加载之前加载 那么就可以使用depend-on属性:
- *                  <bean name="student" class="Spring.spring1.Bean.Student" depends-on="card"/>
+ *      https://img-blog.csdnimg.cn/img_convert/e250bbabbe3c06f1a2680787a580e436.png
  */
 public class Main {
 
+    static void test1() {
+
+        ApplicationContext context1 = new ClassPathXmlApplicationContext("ApplicationFoundation.xml");
+        Student1 student = (Student1) context1.getBean("student1");
+        //System.out.println(student);
+        student.hello();
+
+    }
+
     public static void main(String[] args) {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("SpringTest.xml");
 
-        /*Student student1 = (Student) context.getBean("student");
-        Student student2 = (Student) context.getBean("student");
-        System.out.println(student1);
-        System.out.println(student2);*/
+        test1();
 
-        /*Student student = (Student) context.getBean("student");
-        System.out.println(student);
-        context.close();*/
     }
 
 }
