@@ -43,12 +43,12 @@
 
     <!-- <bean name="student" class="Spring.springFoundation5.entity.Student5" init-method="init" destroy-method="destroy"/> -->
 
-    <!-- <bean name="art" class="Spring.springFoundation5.entity.ArtStudent">
-        <property name="name" value="李牛逼"/>
+    <bean name="art" class="Spring.springFoundation5.entity.ArtStudent">
+        <property name="name" value="小明"/>
     </bean>
-    <bean name="program" class="Spring.springFoundation5.entity.ProgramS tudent" parent="art">
+    <bean name="program" class="Spring.springFoundation5.entity.ProgramStudent" parent="art">
         <property name="id" value="2"/>
-    </bean> -->
+    </bean>
 
 
 
