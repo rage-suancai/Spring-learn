@@ -42,15 +42,19 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 不过在有些时候 Bean的获取可能会出现歧义 我们可以来分别注册两个子类的Bean:
  *
  *                  public class ArtStudent extends Student {
+ *
  *                      public void art() {
  *                          System.out.println("我爱画画");
  *                      }
+ *
  *                  }
  *
  *                  public class SportStudent extends Student {
+ *
  *                      public void sport() {
  *                          System.out.println("我爱运动");
  *                      }
+ *
  *                  }
  *
  *                  <bean class="Spring.spring2.entity.ArtStudent"/>

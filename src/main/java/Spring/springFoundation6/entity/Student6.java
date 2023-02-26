@@ -7,8 +7,10 @@ package Spring.springFoundation6.entity;
  * @Desription:
  * @date 2023/2/25 15:04
  */
-public class Student {
+public class Student6 {
 
-
+    Student6() {
+        System.out.println("我被构造了");
+    }
 
 }

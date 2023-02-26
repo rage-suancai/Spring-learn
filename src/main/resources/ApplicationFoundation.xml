@@ -41,8 +41,7 @@
     <bean name="student4" class="Spring.springFoundation4.entity.Student4" autowire="byName"/>
     <bean name="student4" class="Spring.springFoundation4.entity.Student4" autowire="constructor"/> -->
 
-    <!-- <bean name="student" class="Spring.springFoundation5.entity.Student5" init-method="init" destroy-method="destroy"/> -->
-
+    <!-- <bean name="student5" class="Spring.springFoundation5.entity.Student5" init-method="init" destroy-method="destroy"/> -->
     <!-- <bean name="art" class="Spring.springFoundation5.entity.ArtStudent">
         <property name="name" value="李牛逼"/>
     </bean>
@@ -50,6 +49,9 @@
         <property name="id" value="2"/>
     </bean> -->
 
-
+    <!-- <bean name="factory" class="Spring.springFoundation6.entity.Student6Factory" factory-method="getStudent"/> -->
+    <!-- <bean name="factory" class="Spring.springFoundation6.entity.Student6Factory"/>
+    <bean factory-bean="factory" factory-method="getStudent2"/> -->
+    <!-- <bean name="factory" class="Spring.springFoundation6.entity.Student6Factory"/> -->
 
 </beans>

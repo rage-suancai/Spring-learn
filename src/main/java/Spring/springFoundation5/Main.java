@@ -46,19 +46,23 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * Bean之间也是具有继承关系的 只不过这里的继承并不是类的继承 而是属性的继承 比如:
  *
  *                  public class SportStudent {
+ *
  *                      private String name;
  *
  *                      public void setName(String name) {
  *                          this.name = name;
  *                      }
+ *
  *                  }
  *
  *                  public class ArtStudent {
+ *
  *                      private String name;
  *
  *                      public void setName(String name) {
  *                          this.name = name;
  *                      }
+ *
  *                  }
  *
  * 此时 我们先将ArtStudent注册一个Bean:

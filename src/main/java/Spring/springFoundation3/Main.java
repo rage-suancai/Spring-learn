@@ -10,7 +10,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 但是这样远远不够 还记得我们一开始说的 消除类之间的强关联吗? 比如现在由一个教师接口:
  *
  *                  public interface Teacher {
+ *
  *                      void teach();
+ *
  *                  }
  *
  * 具体的实现有两个:
@@ -48,8 +50,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 但是我们发现 如果美术老师不教了 现在来了一个其他的老师教学生 那么就需要去修改Student类的定义:
  *
  *                  public class Student {
+ *
  *                      private Teacher teacher = new ProgramTeacher();
  *                      ...
+ *
  *                  }
  *
  * 可以想象一下 如果现在冒出来各种各样的类都需要这样去用Teacher 那么一旦Teacher的实现发生变化 会导致我们挨个对之前用到Teacher的类进行修改 这就很难受了
@@ -108,12 +112,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 实际上 在很多情况下 类中的某些参数是在构造方法中就已经完成的初始化 而不是创建之后 比如:
  *
  *                  public class Student {
+ *
  *                      private final Teacher teacher; // 构造方法中完成 所以说是一个final变量
  *
  *                      public Student(Teacher teacher) { // Teacher属性是在构造方法中完成的初始化
  *                         this.teacher = teacher;
  *                      }
  *                      ...
+ *
  *                  }
  *
  * 我们前面说了 Bean实际上是由IoC容器进行创建的 但是现在我们修改了默认的无参构造 可以看到配置文件里面报错了:
@@ -136,15 +142,21 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 那要是出现这种情况呢? 现在我们的Student类型中是这样定义的:
  *
  *                  public class Student {
+ *
  *                      private final String name;
+ *
  *                      public Student(String name) {
+ *
  *                          System.out.println("我是一号构造方法");
  *                          this.name = name;
+ *
  *                      }
  *
  *                      public Student(int age) {
+ *
  *                          System.out.println("我是二号构造方法");
- *                          this.name = String.valueOf(age)l
+ *                          this.name = String.valueOf(age);
+ *
  *                      }
  *                  }
  *

@@ -99,9 +99,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 现在 这个对象不需要我们再去创建了 而是由IoC容器自动进行创建并提供 我们可以直接从上下文中获取到它为我们创建的对象:
  *
  *                  public static void main() {
+ *
  *                      ApplicationContext context = new ClassPathXmlApplicationContext("ApplicationFoundation.xml");
  *                      Student student = (Student) context.getBean("student"); // 使用getBean方法来获取对应的对象(Bean)
  *                      student.hello();
+ *
  *                  }
  *
  * 实际上 这里得到的Student对象是由Spring通过反射机制帮助我们创建的 初学者会非常疑惑 为什么要这样来创建对象
