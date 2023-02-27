@@ -4,9 +4,7 @@ import Spring.springFoundation7.entity.ArtTeacher;
 import Spring.springFoundation7.entity.ProgramTeacher;
 import Spring.springFoundation7.entity.Student7;
 import Spring.springFoundation7.entity.Teacher;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 
 import javax.xml.crypto.Data;
 
@@ -17,8 +15,7 @@ import javax.xml.crypto.Data;
  * @Desription:
  * @date 2023/2/26 0:43
  */
-@Configuration
-@ComponentScan("Spring.springFoundation7.entity")
+@Configuration @ComponentScan("Spring.springFoundation7.entity")
 public class MainConfiguration {
 
     /*@Bean("student7")
@@ -31,10 +28,8 @@ public class MainConfiguration {
         return new Student7();
     }*/
 
-    /*@Bean
-    @Lazy
-    @Scope("prototype")
-    @DependsOn("teacher")
+    /*@Bean @Lazy
+    @Scope("prototype") @DependsOn("teacher")
     public Student7 student7() {
         return new Student7();
     }*/
