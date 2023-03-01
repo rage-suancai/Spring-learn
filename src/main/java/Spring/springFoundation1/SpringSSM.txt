@@ -18,6 +18,34 @@ Spring就是这样的一个框架(文档: https://docs.spring.io/spring-framewor
 它是轻量级Ioc和AOP的容器框架 主要是针对于Bean的生命周期进行管理的轻量级容器 并且它的生态已经发展得极为庞大 那么 首先一问 什么是IoC和AOP 什么又是Bean呢? 不要害怕
 这些概念只是听起来满满的高级感 实际上没有多高级(很多东西都是这样 名字听起来很牛 实际上只是一个很容易理解的东西🤔)
 
+因为 一切的一切 我们还要从JavaBean说起 从这颗豆子生根发芽开始🌱
+
+什么是JavaBean
+JavaBean就是有一定规范的Java实体类 跟普通类差不多 不同的是内部提供了一些公共的方法以便外界对该对象内部属性进行操作 比如set, get操作 实际上 就是外面之前一直在用的:
+
+                    public class User {
+
+                        public String name;
+                        private int age;
+
+                        public String getName() {
+                            return name;
+                        }
+
+                        public String getAge() {
+                            this.name = name;
+                        }
+
+                        public void setAge(int age) {
+                            this.age = age;
+                        }
+
+                    }
+
+它的所有属性都是private 所有的属性都可以通过get/set方法进行访问 同时还需要有一个无参构造(默认就有)
+
+因此我们之前编写的很多类 其实都可以是一个JavaBean
+
 IoC容器基础
 Spring框架最核心的其实它的IoC容器 这是我们开启Spring学习的第一站
 
