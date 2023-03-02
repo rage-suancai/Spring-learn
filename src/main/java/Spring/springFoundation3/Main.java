@@ -49,7 +49,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * 但是我们发现 如果美术老师不教了 现在来了一个其他的老师教学生 那么就需要去修改Student类的定义:
  *
- *                  public class Student {
+ *                  public class Student3 {
  *
  *                      private Teacher teacher = new ProgramTeacher();
  *                      ...
@@ -68,7 +68,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * 同时我们还需要修改一下Student类 依赖注入要求对应的属性必须有一个set方法:
  *
- *                  public class Student {
+ *                  public class Student3 {
  *
  *                      private Teacher teacher;
  *                      // 要使用依赖注入 我们必须提供一个set方法(无论成员变量的访问权限是什么) 命名规则依然是驼峰命名法
@@ -111,7 +111,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * 实际上 在很多情况下 类中的某些参数是在构造方法中就已经完成的初始化 而不是创建之后 比如:
  *
- *                  public class Student {
+ *                  public class Student3 {
  *
  *                      private final Teacher teacher; // 构造方法中完成 所以说是一个final变量
  *
@@ -141,18 +141,18 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * 那要是出现这种情况呢? 现在我们的Student类型中是这样定义的:
  *
- *                  public class Student {
+ *                  public class Student3 {
  *
  *                      private final String name;
  *
- *                      public Student(String name) {
+ *                      public Student3(String name) {
  *
  *                          System.out.println("我是一号构造方法");
  *                          this.name = name;
  *
  *                      }
  *
- *                      public Student(int age) {
+ *                      public Student3(int age) {
  *
  *                          System.out.println("我是二号构造方法");
  *                          this.name = String.valueOf(age);
@@ -170,7 +170,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * 现在我们的类中出现了一个比较特殊的类型 它是一个集合类型:
  *
- *                  public class Student {
+ *                  public class Student3 {
  *
  *                      private List<String> list;
  *

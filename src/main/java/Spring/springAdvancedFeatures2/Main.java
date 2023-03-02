@@ -51,10 +51,12 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * 现在我们在主方法中分别调用一下试试看:
  *
  *                  public static void main() {
+ *
  *                      AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
  *                      Student7 student7 = context.getBean(Student7.class);
  *                      student7.asyncTest(); // 异步执行
  *                      student7.syncTest(); // 同步执行
+ *
  *                  }
  *
  *      https://img-blog.csdnimg.cn/img_convert/cc206a7190773661025bc7d0651538fa.png
