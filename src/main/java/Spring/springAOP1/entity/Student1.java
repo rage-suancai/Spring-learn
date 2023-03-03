@@ -17,14 +17,12 @@ public class Student1 {
        System.out.println("都别学习Java了 快去卷" + str);
    }
 
-    public String study3(String str) {
+   public String study3(String str) {
 
-        if (str.equals("Rust"))
-            System.out.println("我的梦想是学习Rust");
-        else
-            System.out.println("我就要学Rust 不要修改我的梦想"); str = "Rust";
+        if (str.equals("Rust")) System.out.println("我的梦想是学习Rust");
+        else System.out.println("我就要学Rust 不要修改我的梦想"); str = "Rust";
         return str;
 
-    }
+   }
 
 }

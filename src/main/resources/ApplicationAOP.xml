@@ -9,15 +9,15 @@
     <bean name="studentAOP" class="Spring.springAOP1.entity.StudentAOP"/>
     <aop:config>
 
-        <!-- <aop:pointcut id="aft1" expression="execution(* Spring.springAOP1.entity.Student1.study1())"/>
-        <aop:aspect ref="studentAOP">
-            <aop:after method="afterStudy1" pointcut-ref="aft1"/>
-        </aop:aspect>-->
+<!--        <aop:pointcut id="aft1" expression="execution(* Spring.springAOP1.entity.Student1.study1())"/>-->
+<!--        <aop:aspect ref="studentAOP">-->
+<!--            <aop:after method="afterStudy1" pointcut-ref="aft1"/>-->
+<!--        </aop:aspect>-->
 
-        <!-- <aop:pointcut id="aft2" expression="execution(* Spring.springAOP1.entity.Student1.study2(String))"/>
-        <aop:aspect ref="studentAOP">
-            <aop:after method="afterStudy2" pointcut-ref="aft2"/>
-        </aop:aspect> -->
+<!--        <aop:pointcut id="aft2" expression="execution(* Spring.springAOP1.entity.Student1.study2(String))"/>-->
+<!--        <aop:aspect ref="studentAOP">-->
+<!--            <aop:after method="afterStudy2" pointcut-ref="aft2"/>-->
+<!--        </aop:aspect>-->
 
         <aop:pointcut id="aft3" expression="execution(* Spring.springAOP1.entity.Student1.study3(String))"/>
         <aop:aspect ref="studentAOP">
@@ -25,5 +25,17 @@
         </aop:aspect>
 
     </aop:config>
+
+    <!-- <bean name="student2" class="Spring.springAOP2.entity.Student2"/>
+    <bean name="studentAOP" class="Spring.springAOP2.entity.StudentAOP"/>
+    <aop:config>
+
+        <aop:pointcut id="aft1" expression="execution(* Spring.springAOP2.entity.Student2.study1())"/>
+        <aop:advisor advice-ref="studentAOP" pointcut-ref="aft1"/>
+
+        <aop:pointcut id="aft2" expression="execution(* Spring.springAOP2.entity.Student2.study2())"/>
+        <aop:advisor advice-ref="studentAOP" pointcut-ref="aft2"/>
+
+    </aop:config> -->
 
 </beans>

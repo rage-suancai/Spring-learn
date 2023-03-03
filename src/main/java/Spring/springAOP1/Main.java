@@ -15,6 +15,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *                         xmlns:aop="http://www.springframework.org/schema/aop"
  *                         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
  *                         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+ *
  *                  </beans>
  *
  * Spring是支持AOP编程的框架之一(实际上它整合了AspectJ框架的一部分) 要使用AOP我们需要导入一个依赖:
@@ -227,7 +228,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *
  * 这里我们还是study方法为例 现在我们希望在调用前修改这个方法传入的参数值 改成我们自己的 然后在调用之后对返回值结果也进行处理:
  *
- *                  public void study3(String str) {
+ *                  public String study3(String str) {
  *
  *                      if (str equals("Rust"))
  *                          System.out.println("我的梦想是学习Rust");
@@ -295,7 +296,7 @@ public class Main {
 
         //student1.study1();
         //student1.study2("PHP");
-        System.out.println("已报名: " + student1.study3("Rust"));
+        System.out.println("已报名: " + student1.study3("Java"));
 
     }
 

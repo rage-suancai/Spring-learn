@@ -22,10 +22,10 @@ public class StudentAOP {
 
     public Object around(ProceedingJoinPoint joinPoint) {
 
-        System.out.println("我是他的家长 他不能学Rust 必须学Java 这是为他好");
+        System.out.println("我是孩子他家长 他不能学Rust 必须学Java 这是为他好");
         try {
             Object value = joinPoint.proceed(new Object[]{"Java"});
-            if (value.equals("Rust")) System.out.println("听话 学Java以后进大厂"); value = "Java";
+            if (value.equals("Rust")) System.out.println("听话 学好Java以后进大厂"); value = "Java";
             return value;
         } catch (Throwable e) {
             throw new RuntimeException(e);
