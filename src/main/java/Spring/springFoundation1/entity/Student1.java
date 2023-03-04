@@ -10,7 +10,7 @@ package Spring.springFoundation1.entity;
 public class Student1 {
 
     public void hello() {
-        System.out.println("Fuck World");
+        System.out.println("Holle Spring");
     }
 
 }
