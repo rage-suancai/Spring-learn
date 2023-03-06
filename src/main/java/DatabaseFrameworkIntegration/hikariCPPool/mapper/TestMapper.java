@@ -1,6 +1,6 @@
 package DatabaseFrameworkIntegration.hikariCPPool.mapper;
 
-import DatabaseFrameworkIntegration.IntegrationMybatis.entity.Student;
+import DatabaseFrameworkIntegration.integrationMybatis.entity.Student;
 import org.apache.ibatis.annotations.Select;
 
 /**

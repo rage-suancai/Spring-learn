@@ -1,7 +1,6 @@
-package DatabaseFrameworkIntegration.IntegrationMybatis.mapper;
+package DatabaseFrameworkIntegration.integrationMybatis.mapper;
 
-import DatabaseFrameworkIntegration.IntegrationMybatis.entity.Student;
-import org.apache.ibatis.annotations.Mapper;
+import DatabaseFrameworkIntegration.integrationMybatis.entity.Student;
 import org.apache.ibatis.annotations.Select;
 
 /**

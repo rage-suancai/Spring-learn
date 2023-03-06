@@ -1,7 +1,7 @@
-package DatabaseFrameworkIntegration.IntegrationMybatis;
+package DatabaseFrameworkIntegration.integrationMybatis;
 
-import DatabaseFrameworkIntegration.IntegrationMybatis.config.MainConfiguration;
-import DatabaseFrameworkIntegration.IntegrationMybatis.mapper.TestMapper;
+import DatabaseFrameworkIntegration.integrationMybatis.config.MainConfiguration;
+import DatabaseFrameworkIntegration.integrationMybatis.mapper.TestMapper;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

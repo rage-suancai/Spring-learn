@@ -18,7 +18,7 @@
     </environments>
 
 <!--    <mappers>-->
-<!--        <mapper class="DatabaseFrameworkIntegration.IntegrationMybatis.mapper.TestMapper"/>-->
+<!--        <mapper class="DatabaseFrameworkIntegration.integrationMybatis.mapper.TestMapper"/>-->
 <!--    </mappers>-->
 
 </configuration>

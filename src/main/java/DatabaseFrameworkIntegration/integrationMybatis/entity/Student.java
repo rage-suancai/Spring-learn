@@ -1,4 +1,4 @@
-package DatabaseFrameworkIntegration.IntegrationMybatis.entity;
+package DatabaseFrameworkIntegration.integrationMybatis.entity;
 
 import lombok.Data;
 

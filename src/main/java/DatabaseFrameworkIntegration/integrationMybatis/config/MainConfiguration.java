@@ -1,4 +1,4 @@
-package DatabaseFrameworkIntegration.IntegrationMybatis.config;
+package DatabaseFrameworkIntegration.integrationMybatis.config;
 
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
