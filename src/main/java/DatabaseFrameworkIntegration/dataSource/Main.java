@@ -61,7 +61,6 @@ package DatabaseFrameworkIntegration.dataSource;
  *
  * 一般比较常用的DataSource实现 都是采用池化技术 就是在一开始就创建好N个连接 这样之后使用就无需再次进行连接 而是直接使用现成的Connection对象进行数据库操作:
  *
- *
  *      https://smms.app/image/rk4mcdvYn6osOLW
  *
  * 当然 也可以使用传统的即用即连的方式获取Connection对象 Mybatis为我们提供了几个默认的数据源实现 我们之前一直在使用的是官方的默认配置 也就是池化数据源:
