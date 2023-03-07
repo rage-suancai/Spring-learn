@@ -8,7 +8,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 /**
  * 整合Mybatis框架
- * 通过了解数据源 我们已经清楚 Mybatis实际上是在使用自己编写的数据源(数据源实现其实有很多 之后我们再聊其他的) 默认使用的是池化数据源 它预先存储了很多的连接对象
+ * 通过了解数据源 我们已经清楚 Mybatis实际上是在使用自己编写的数据源(数据源实现其实有很多 之后我们再聊其他的)默认使用的是池化数据源 它预先存储了很多的连接对象
  *
  * 那么我们来看一下 如何将Mybatis与Spring更好的结合呢? 比如我们现在希望将SqlSessionFactory交给IoC容器进行管理
  * 而不是我们自己创建工具类来管理(我们之前一直都在使用工具类管理合创建会话)

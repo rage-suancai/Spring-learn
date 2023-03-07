@@ -5,5 +5,224 @@ Spring实现原理探究(选学)
 对初学者来说等同于小学跨越到高中 它并不是必学内容 但是对于个人阅历提示极为重要(推荐完成整个SSM阶段的学习并且加以实战之后再来看此部分)
 如果你还是觉得自己能够跟上节奏继续深入钻研底层原理 那么现在就开始吧👊
 
+Bean工厂与Bean定义
+实际上我们之前的所有操作都离不开一个东西 那就是IoC容器 那么它到底是如何实现呢? 这一部分我们将详细介绍 首先我们大致了解一下ApplicationContext的加载流程:
+
+        https://smms.app/image/Un6qjPci2uvkL5X
+
+我们可以看到 整个过程极为复杂 一句话肯定是无法解释的 由于Spring的源码非常庞大 因此我们不可能再像了解其他框架那样直接自低向上逐行干源码了
+(各位可以自己点开看看 代码量非常多)🤒
+
+        https://smms.app/image/QXqvO1sGh6d4ZSz
+
+我们需要先从非常小的点开始进行介绍 最后将所有点汇总才能瓦解整快拼图
+
+首先 容器既然要管理Bean 那么肯定需要一个完善的管理机制 实际上 对Bean的管理都是依靠BeanFactory在进行
+顾名思义BeanFactory就是对Bean进行生产和管理的工厂 我们可以自己尝试自己创建和使用BeanFactory对象:
+
+                    public static void main(String[] args) {
+
+                        DefaultListableBeanFactory factory = new DefaultListableBeanFactory(); // 这是BeanFactory的一个默认实现类
+                        System.out.println("获取Bean对象: " + factory.getBean("lbwnb")); // 我们可以直接找工厂获取Bean对象
+
+                    }
+
+我们可以直接找Bean工厂索要对象 只不过在一开始 工厂并不知道自己需要生产什么 可以生产什么 因此我们直接索要一个工厂不知道的Bean对象 会直接得到:
+
+        https://smms.app/image/n54N3iFQX7awHAl
+
+我们只有告诉工厂我们要生产什么 怎么生产 工厂才能开工:
+
+                    public static void main(String[] args) {
+
+                        DefaultListableBeanFactory factory = new DefaultListableBeanFactory(); // 这是BeanFactory的一个默认实现类
+
+                        BeanDefinition definition = BeanDefinitionBuilder // 使用BeanDefinitionBuilder快速创建Bean定义
+                                .rootBeanDefinition(Student.class); // Bean的类型
+                                .setScope("prototype") // 设置作用域为原型模式
+                                .getBeanDefinition(); // 生成此Bean定义
+                        factory.registerBeanDefinition("lbwnb", definition); // 向工厂注册Bean此定义 并设定Bean的名称
+
+                        System.out.println(factory.getBean("lbwnb")); // 现在就可以拿到了
+
+                    }
+
+实际上 我们的ApplicationContext中就维护了一个AutowireCapableBeanFactory对象:
+
+                    public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
+                         @Nullable
+                         private volatile DefaultListableBeanFactory beanFactory;   // 默认构造后存放在这里的是一个DefaultListableBeanFactory对象
+
+                        ...
+
+                        @Override
+                        public final ConfigurableListableBeanFactory getBeanFactory() {   // getBeanFactory就可以直接得到上面的对象了
+                           DefaultListableBeanFactory beanFactory = this.beanFactory;
+                           if (beanFactory == null) {
+                              throw new IllegalStateException("BeanFactory not initialized or already closed - " +
+                                    "call 'refresh' before accessing beans via the ApplicationContext");
+                           }
+                           return beanFactory;
+                      }
+
+我们可以尝试获取一下:
+
+                    ApplicationContext context = new ClassPathXmlApplicationContext("application.xml");
+                    // 我们可以直接获取此对象
+                    System.out.println(context.getAutowireCapableBeanFactory());
+
+正是因为这样 ApplicationContext才具有了管理和生成Bean对象的能力💡
+
+不过 我们的配置可能是XML 可能是配置类 那么Spring要如何进行解析 将这些变成对应的BeanDefinition对象呢? 使用BeanDefinitionReader就可以:
+
+                    public static void main() {
+
+                        DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+                        // 比如我们要读取XML配置 我们直接使用XmlBeanDefinitionReader就可以快速进行扫描
+                        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+                        // 加载此XML文件中所有的Bean定义到Bean工厂中
+                        reader.loadBeanDefinitions(new ClassPathResource("application.xml"));
+
+                        // 可以看到能正常生产此Bean的实例对象
+                        System.out.println(factory.getBean(Student.class));
+
+                    }
+
+因此 针对于不同类型的配置方式 ApplicationContext有着多种实现 其中常用的有:
+
+    > ClassPathXmlApplicationContext: 适用于类路径下的XML配置文件
+    > FileSystemXmlApplicationContext: 适用于非类路径下的XML配置文件
+    > AnnotationConfigApplicationContext: 适用于注解配置形式
+
+比如ClassPathXmlApplicationContext在初始化的时候就会创建一个对应的XmlBeanDefinitionReader进行扫描:
+
+                    @Override
+                    protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
+                       // 为给定的BeanFactory创建XmlBeanDefinitionReader便于读取XML中的Bean配置
+                       XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+
+                       // 各种配置 忽略掉
+                       beanDefinitionReader.setEnvironment(this.getEnvironment());
+                       ...
+                       // 配置完成后 直接开始加载XML文件中的Bean定义
+                       loadBeanDefinitions(beanDefinitionReader);
+                    }
+
+                    protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
+                       Resource[] configResources = getConfigResources();   // 具体加载过程我就不详细介绍了
+                       if (configResources != null) {
+                          reader.loadBeanDefinitions(configResources);
+                       }
+                       String[] configLocations = getConfigLocations();
+                       if (configLocations != null) {
+                          reader.loadBeanDefinitions(configLocations);
+                       }
+                    }
+
+现在 我们就已经知道 Bean实际上是一开始通过BeanDefinitionReader进行扫描 然后将所有Bean以BeanDefinition对象的形式注册到对应的BeanFactory中进行集中管理
+而我们使用的ApplicationContext实际上内部就有一个BeanFactory在进行Bean管理 这样容器才拥有了最基本的Bean管理功能
+
+当然 BeanFactory还可以具有父子关系 其中最关键的作用就是继承父容器中所有的Bean定义 这样的话
+如果我们想要创建一个新的BeanFactory并且默认具有其他BeanFactory中所有的定义外加一些其他的 那么就可以采用这种形式 这是很方便的👍:
+
+                    public static void main(String[] args) {
+
+                        DefaultListableBeanFactory factoryParent = new DefaultListableBeanFactory();
+                        DefaultListableBeanFactory factoryChild = new DefaultListableBeanFactory();
+                        // 在父工厂中注册A
+                        factoryParent.registerBeanDefinition("a", new RootBeanDefinition(A.class));
+                        // 在子工厂中注册B, C
+                        factoryChild.registerBeanDefinition("b", new RootBeanDefinition(B.class));
+                        factoryChild.registerBeanDefinition("c", new RootBeanDefinition(C.class));
+                        // 最后设定子工厂的父工厂
+                        factoryChild.setParentBeanFactory(factoryParent);
+
+                    }
+
+                    static class A { }
+                    static class B { }
+                    static class C { }
+
+现在我们来看看是不是我们想的那样:
+
+                    System.out.println(factoryChild.getBean(A.class)); // 子工厂不仅能获取到自己的也可以拿到父工厂的
+                    System.out.println(factoryChild.getBean(B.class));
+                    System.out.println(factoryChild.getBean(C.class));
+
+                    System.out.println(factoryParent.getBean(B.class)); // 注意父工厂不能拿到子工厂的 就像类的继承一样
+
+同样的 我们在使用ApplicationContext时 也可以设定这样的父子关系 效果相同:
+
+                    ApplicationContext contextParent = new ApplicationContext("parent.xml")
+                    ApplicationContext contextChild = new ApplicationContext(new String[]{"child.xml"}, contextParent); // 第一个参数只能用数组
+
+当然 除了这些功能之外 BeanFactory还提供了很多其他的管理Bean定义的方法 比如移除Bean定义 拷贝Bean定义
+消耗单例Bean实例对象等功能 这里就不一一列出了 各位小伙伴自己调用一下测试就可以了 很简单
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+单例Bean的创建与循环依赖
+前面我们讲解了配置的Bean是如何被读取并加载到容器中的 接着我们来了解一下Bean实例对象是如何被创建并得到的 我们知道 如果要得到一个Bean的实例很简单 通过getBean方法就可以直接拿到了:
+
+                    ApplicationContext context = new ClassPathXmlApplicationContext("application.xml");
+                    System.out.println(context.getBean(student.class)); // 通过此方法就能快速得到
+
+我们可以直接找到BeanFactory接口的一个抽象实现AbstractBeanFactory类 它实现类getBean()方法:
+
+                    public Object getBean(String name) throws BeansException {
+                        // 套娃开始了 做好准备🙆‍
+                        return this.doGetBean(name, (Class)null, (Object[])null, false);
+                    }
+
+那么我们doGetBean()接着来看方法里面干了什么 这个方法比较长 我们分段进行讲解:
+
+                    protected <T> T doGetBean(String name, @Nullable Class<T> requiredType, @Nullable Object[] args, boolean typeCheckOnly) throws BeansException {
+                        String beanName = this.transformedBeanName(name);   // 虽然这里直接传的就是name 但是万一是别名呢 所以还得要解析一下变成原本的Bean名字
+                        Object sharedInstance = this.getSingleton(beanName);   // 首先直接获取单例Bean对象
+                        Object beanInstance;
+                        if (sharedInstance != null && args == null) {   // 判断是否成功获取到共享的单例对象
+                        ...
+
+因为所有的Bean默认都是单例模式 对象只会存在一个 因此它会先调用父类的getSingleton()方法来直接获取单例对象
+
+                    protected <T> T doGetBean(String name, @Nullable Class<T> requiredType, @Nullable Object[] args, boolean typeCheckOnly) throws BeansException {
+                        ...
+                        if (sharedInstance != null && args == null) {
+                            if (this.logger.isTraceEnabled()) {
+                                // 这里会判断Bean是否为正在创建状态 为什么会有这种状态呢? 我们会在后面进行介绍
+                                if (this.isSingletonCurrentlyInCreation(beanName)) {
+                                    this.logger.trace("Returning eagerly cached instance of singleton bean '" + beanName + "' that is not fully initialized yet - a consequence of a circular reference");
+                                } else {
+                                    this.logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
+                                }
+                            }
+                              // 这里getObjectForBeanInstance会进行最终处理
+                              // 因为Bean有两个特殊的类型 工厂Bena和空Bean 所以说需要单独处理
+                              // 如果是普通Bean直接原样返回beanInstance接收到最终结果
+                            beanInstance = this.getObjectForBeanInstance(sharedInstance, name, beanName, (RootBeanDefinition)null);
+                        } else {
+                           ...
+                        }
+                          // 最后还会进行一次类型判断 如果都没问题 直接返回beanInstance作为结果 我们就得到Bean的实例对象了
+                          return this.adaptBeanInstance(name, beanInstance, requiredType);
+                    }
+
+实际上整个单例Bean的创建路线还是很清晰的 并没有什么很难理解的地方 在正常情况下 其实就是简单的创建对象实例并返回即可
+
+其中最关键的是它对于循环依赖的处理 我们发现 在上面的代码中 得到单例对象后 会有一个很特殊的判断isSingletonCurrentlyInCreation
+这个是干嘛的? 对象不应该直接创建出来吗? 为什么会有这种正在创建的状态呢? 我们来研究一下
+
+开始之前先给大家提个问题:
+
+    现在有两个Bean A和B都是以原型模式进行创建 而A中需注入B B中需要注入A 这时就会出现A还未创建完成 就需要B 而B这时也没创建完成 因为B需要A 而A等着B B又等着A
+    这样就只能无限循环下去了(就像死锁那种感觉) 所以就出现了循环依赖的问题(同理 一个对象注入自己 还有三个对象之间 设置多个对象之间也会出现这种情况)
+
+但是 在单例模式下 由于每个Bean只会创建一个实例 只要能够处理好对象之间的引用关系 Spring完全有机会解决单例对象循环依赖的问题 那么单例模式下是如何解决循环依赖问题的呢?
+
+        https://smms.app/image/aRjr1968Lc3BkKH
+
+
+
+
 
 

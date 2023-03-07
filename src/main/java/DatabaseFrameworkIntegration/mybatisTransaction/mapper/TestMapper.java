@@ -1,4 +1,4 @@
-package DatabaseFrameworkIntegration.mybatisAffairs.mapper;
+package DatabaseFrameworkIntegration.mybatisTransaction.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 

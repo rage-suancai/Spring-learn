@@ -1,7 +1,7 @@
-package DatabaseFrameworkIntegration.mybatisAffairs.Service.impl;
+package DatabaseFrameworkIntegration.mybatisTransaction.Service.impl;
 
-import DatabaseFrameworkIntegration.mybatisAffairs.Service.TestService;
-import DatabaseFrameworkIntegration.mybatisAffairs.mapper.TestMapper;
+import DatabaseFrameworkIntegration.mybatisTransaction.Service.TestService;
+import DatabaseFrameworkIntegration.mybatisTransaction.mapper.TestMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

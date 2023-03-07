@@ -1,6 +1,6 @@
 package com.Test;
 
-import DatabaseFrameworkIntegration.mybatisAffairs.Service.TestService;
+import DatabaseFrameworkIntegration.mybatisTransaction.Service.TestService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package DatabaseFrameworkIntegration.mybatisAffairs.config;
+package DatabaseFrameworkIntegration.mybatisTransaction.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -20,8 +20,8 @@ import javax.sql.DataSource;
  * @date 2023/3/6 16:27
  */
 @Configuration
-@ComponentScan("DatabaseFrameworkIntegration.mybatisAffairs.Service.impl")
-@MapperScan("DatabaseFrameworkIntegration.mybatisAffairs.mapper")
+@ComponentScan("DatabaseFrameworkIntegration.mybatisTransaction.Service.impl")
+@MapperScan("DatabaseFrameworkIntegration.mybatisTransaction.mapper")
 @EnableTransactionManagement
 public class MainConfiguration {
 

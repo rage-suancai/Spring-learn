@@ -20,8 +20,8 @@ import javax.sql.DataSource;
  * @date 2023/3/6 21:44
  */
 @Configuration
-@ComponentScan("DatabaseFrameworkIntegration.mybatisAffairs.Service.impl")
-@MapperScan("DatabaseFrameworkIntegration.mybatisAffairs.mapper")
+@ComponentScan("DatabaseFrameworkIntegration.mybatisTransaction.Service.impl")
+@MapperScan("DatabaseFrameworkIntegration.mybatisTransaction.mapper")
 @EnableTransactionManagement
 public class TestConfiguration {
 

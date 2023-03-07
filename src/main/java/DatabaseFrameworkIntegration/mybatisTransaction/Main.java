@@ -1,8 +1,7 @@
-package DatabaseFrameworkIntegration.mybatisAffairs;
+package DatabaseFrameworkIntegration.mybatisTransaction;
 
-import DatabaseFrameworkIntegration.mybatisAffairs.Service.TestService;
-import DatabaseFrameworkIntegration.mybatisAffairs.Service.impl.TestServiceImpl;
-import DatabaseFrameworkIntegration.mybatisAffairs.config.MainConfiguration;
+import DatabaseFrameworkIntegration.mybatisTransaction.Service.TestService;
+import DatabaseFrameworkIntegration.mybatisTransaction.config.MainConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
