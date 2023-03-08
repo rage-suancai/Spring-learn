@@ -1,10 +1,9 @@
 package SpringPrinciple;
 
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * @author YXS
@@ -41,7 +40,7 @@ public class Main {
 
     static void test3() {
 
-        /*DefaultListableBeanFactory factoryParent = new DefaultListableBeanFactory();
+        DefaultListableBeanFactory factoryParent = new DefaultListableBeanFactory();
         DefaultListableBeanFactory factoryChild = new DefaultListableBeanFactory();
 
         factoryParent.registerBeanDefinition("a", new RootBeanDefinition(A.class));
@@ -52,13 +51,16 @@ public class Main {
         System.out.println(factoryChild.getBean(A.class));
         System.out.println(factoryChild.getBean(B.class));
         System.out.println(factoryChild.getBean(C.class));
-        System.out.println(factoryParent.getBean(B.class));*/
+        System.out.println(factoryParent.getBean(B.class));
 
     }
 
     static void test4() {
 
-        //BeanFactory
+        System.out.println("项目正在启动...");
+        ApplicationContext context = new FileSystemXmlApplicationContext("xxx");
+        System.out.println(context.getBean("&test"));
+        System.out.println(context.getBean("test"));
 
     }
 

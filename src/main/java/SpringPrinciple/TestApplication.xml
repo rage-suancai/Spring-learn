@@ -6,4 +6,6 @@
 
     <bean name="student" class="SpringPrinciple.entity.Student"/>
 
+    <bean name="test" class="SpringPrinciple.bean.TestFb"/>
+
 </beans>
