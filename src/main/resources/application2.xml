@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- <bean name="teacher" class="Spring.bean2.ProgramTeacher"/>
+    <bean name="student" class="Spring.bean2.Student">
+        <property name="name" value="小高"/>
+        <property name="teacher" ref="teacher"/>
+    </bean> -->
+
+    <!-- <bean name="teacher" class="Spring.bean2.ProgramTeacher"/>
+    <bean name="student" class="Spring.bean2.Student">
+        <constructor-arg name="name" value="小高"/>
+        <constructor-arg name="teacher" ref="teacher"/>
+    </bean> -->
+
+    <!-- <bean name="student" class="Spring.bean2.Student">
+        <property name="list">
+            <list>
+                <value>AAA</value>
+                <value>BBB</value>
+                <value>CCC</value>
+            </list>
+        </property>
+    </bean> -->
+
+    <bean name="student" class="Spring.bean2.Student">
+        <property name="map">
+            <map>
+                <entry key="语文" value="100.0"/>
+                <entry key="数学" value="100.0"/>
+                <entry key="英语" value="100.0"/>
+            </map>
+        </property>
+    </bean>
+
+</beans>
