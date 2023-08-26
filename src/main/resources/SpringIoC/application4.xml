@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       https://www.springframework.org/schema/beans/spring-beans.xsd" default-lazy-init="true">
+
+    <!-- <bean name="student" class="Spring.SpringIoC.bean4.Student" init-method="init" destroy-method="destroy"/> -->
+
+    <!-- <bean name="artStudent" class="Spring.SpringIoC.bean4.ArtStudent">
+        <property name="name" value="小明"/>
+    </bean>
+    <bean name="programStudent" class="Spring.SpringIoC.bean4.ProgramStudent">
+        <property name="name" value="小红"/>
+    </bean> -->
+
+    <!-- <bean name="artStudent" class="Spring.SpringIoC.bean4.ArtStudent">
+        <property name="name" value="小明"/>
+    </bean>
+    <bean name="programStudent" class="Spring.SpringIoC.bean4.ProgramStudent" parent="artStudent"/> -->
+
+    <bean name="artStudent" class="Spring.SpringIoC.bean4.ArtStudent" abstract="true">
+        <property name="name" value="小明"/>
+    </bean>
+    <bean name="programStudent" class="Spring.SpringIoC.bean4.ProgramStudent" parent="artStudent"/>
+
+</beans>

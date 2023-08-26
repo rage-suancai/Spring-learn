@@ -1,6 +1,6 @@
 <img src="https://image.itbaima.net/markdown/2022/10/08/ZsKlOvz5xmXSutw.png"/>
 
-### Spring核心技术
+## Spring核心技术
 前置课程要求: 请各位小伙伴先完成《JavaWeb》篇,《Java 9-17新特性》篇文章之后 再来观看此篇文章
 
 建议: 对Java开发还不是很熟悉的同学 最好先花费半个月到一个月时间大量地去编写小项目 不推荐一口气学完
@@ -788,7 +788,149 @@ Bean之间也是具备继承关系的 只不过这里的继承并不是类的继
                     </bean>
 ```
 
-但是如果属性太多的话 是不是写起来有点麻烦? 这种情况 我们就可以配置Bean之间的继承关系了 我们可以让SportStudent这个Bean直接继承ArtStudent这个Bean配置的属性
+但是如果属性太多的话 是不是写起来有点麻烦? 这种情况 我们就可以配置Bean之间的继承关系了 我们可以让SportStudent这个Bean直接继承ArtStudent这个Bean配置的属性:
+
+```xml
+                    <bean class="com.test.bean.SportStudent" parent="artStudent"/>
+```
+
+这样 在ArtStudent Bean中配置的属性 会直接继承给SportStudent Bean(注意 所有配置的属性 在子Bean中必须也要存在 并且可以进行注入 否则会出现错误) 当然 如果子类中某些属性比较特殊 也可以在继承的基础上单独配置:
+
+```xml
+                    <bean name="artStudent" class="com.test.bean.ArtStudent" abstract="true">
+                        <property name="name" value="小明"/>
+                        <property name="id" value="1"/>
+                    </bean>
+                    <bean class="com.test.bean.SportStudent" parent="artStudent">
+                        <property name="id" value="2"/>
+                    </bean>
+```
+
+如果我们只是希望某一个Bean仅作为一个配置模版供其他Bean继承使用 那么我们可以将其配置为abstract 这样 容器就不会创建这个Bean的对象了:
+
+```xml
+                    <bean name="artStudent" class="com.test.bean.ArtStudent" abstract="true">
+                        <property name="name" value="小明"/>
+                    </bean>
+                    <bean class="com.test.bean.SportStudent" parent="artStudent"/>
+```
+
+注意 一旦声明为抽象Bean 那么就无法通过容器获取到其实例化对象了
+
+<img src="https://image.itbaima.net/markdown/2022/11/23/SyDkvOldB7ETW4z.png"/>
+
+不过Bean的继承使用频率不是很高 了解就行
+
+这里最后再提一下 我们前面已经学习了各种各样的Bean配置属性 如果我们希望整个上下文中所有的Bean都采用某种配置 我们可以在最外层的beans标签中进行默认配置:
+
+<img src="https://image.itbaima.net/markdown/2022/11/23/KzSUJXa4jBfO9rd.png"/>
+
+这样 即使Bean没有配置某项属性 但是只要在最外层编写了默认配置 那么同样会生效 除非Bean自己进行配置覆盖掉默认配置
+
+### 工厂模式和工厂Bean
+前面我们介绍了IoC容器的Bean创建机制 默认情况下 容器会调用Bean对应类型的构造方法进行对象创建 但是在某些时候 我们可能不希望外界使用类的构造方法完成对象创建 比如在工厂方法设计模式中
+(详情请观看《Java设计模式》篇文章) 我们更希望 Spring不要直接利用反射机制通过构造方法创建Bean对象 而是利用反射机制先找到对应的工厂类 然后利用工厂类去生成需要的Bean对象
+
+```java
+                    public class Student {
+    
+                        Student() {
+                            System.out.println("我被构造了");
+                        }
+                        
+                    }
+```
+```java
+                    public class StudentFactory {
+    
+                        public static Student getStudent(){
+                            
+                          	System.out.println("欢迎光临电子厂");
+                            return new Student();
+                            
+                        }
+                        
+                    }
+```
+
+此时Student有一个工厂 我们正常情况下需要使用工厂才可以得到Student对象 现在我们希望Spring也这样做 不要直接去反射搞构造方法创建 我们可以通过factory-method进行指定:
+
+```xml
+                    <bean class="com.test.bean.StudentFactory" factory-method="getStudent"/>
+```
+
+注意 这里的Bean类型需要填写为Student类的工厂类 并且添加factory-method指定对应的工厂方法 但是最后注册的是工厂方法的返回类型 所以说依然是Student的Bean:
+
+<img src="https://image.itbaima.net/markdown/2022/11/23/5Id43xPneJiWfZs.png"/>
+
+此时我们再去进行获取 拿到的也是通过工厂方法得到的对象:
+
+<img src="https://image.itbaima.net/markdown/2022/11/23/l8HzN7Rwthqrim5.png"/>
+
+这里有一个误区 千万不要认为是我们注册了StudentFactory这个Bean class填写为这个类这个只是为了告诉Spring我们的工厂方法在哪个位置 真正注册的是工厂方法提供的东西
+
+可以发现 当我们采用工厂模式后 我们就无法再通过配置文件对Bean进行依赖注入等操作了 而是只能在工厂方法中完成 这似乎与Spring的设计理念背道而驰?
+
+当然 可能某些工厂类需要构造出对象之后才能使用 我们也可以将某个工厂类直接注册为工厂Bean
+
+```java
+                    public class StudentFactory {
+                    
+                        public Student getStudent(){
+                        
+                            System.out.println("欢迎光临电子厂");
+                            return new Student();
+                            
+                        }
+                        
+                    }
+```
+
+现在需要StudentFactory对象才可以获取到Student 此时我们就只能先将其注册为Bean了:
+
+```xml
+                    <bean name="studentFactory" class="com.test.bean.StudentFactory"/>
+```
+
+像这样将工厂类注册为Bean 我们称其为工厂Bean 然后再使用factory-bean来指定Bean的工厂Bean:
+
+```xml
+                    <bean factory-bean="studentFactory" factory-method="getStudent"/>
+```
+
+注意 使用factory-bean之后 不再要求指定class 我们可以直接使用了:
+
+<img src="https://image.itbaima.net/markdown/2022/11/23/ih1Af7xBdX3ebaG.png"/>
+
+此时可以看到 工厂方法上同样有了图标 这种方式 由于工厂类被注册为Bean 此时我们就可以在配置文件中为工厂Bean配置依赖注入等内容了
+
+这里还有一个很细节的操作 如果我们想获取工厂Bean为我们提供的Bean 可以直接输入工厂Bean的名称 这样不会得到工厂Bean的实例 而是工厂Bean生产的Bean的实例
+
+```java
+                    Student bean = (Student) context.getBean("studentFactory");
+```
+
+当然 如果我们需要获取工厂类的实例 可以在名称前面添加&符号
+
+```java
+                    StudentFactory bean = (StudentFactory) context.getBean("&studentFactory");
+```
+
+又是一个小细节
+
+### 使用注解开发
+前面我们已经完成了大部分的配置文件学习 但是我们发现 使用配置文件进行配置 貌似有点太累了吧? 可以想象一下 如果我们的项目非常庞大
+整个配置文件将会充满Bean配置 并且会继续庞大下去 能否有一种更加高效的方法能够省去配置呢? 还记得我们在JavaWeb阶段用到的非常方便东西吗? 没错 就是注解
+
+既然现在要使用注解来进行开发，那么我们就删掉之前的xml配置文件吧，我们来看看使用注解能有多方便
+
+```java
+                    ApplicationContext context = new AnnotationConfigApplicationContext();
+```
+
+
+
+
 
 
 

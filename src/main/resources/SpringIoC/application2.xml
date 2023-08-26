@@ -4,19 +4,19 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        https://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- <bean name="teacher" class="Spring.bean2.ProgramTeacher"/>
-    <bean name="student" class="Spring.bean2.Student">
+    <!-- <bean name="teacher" class="Spring.SpringIoC.bean2.ProgramStudent"/>
+    <bean name="student" class="Spring.SpringIoC.bean2.Student">
         <property name="name" value="小高"/>
         <property name="teacher" ref="teacher"/>
     </bean> -->
 
-    <!-- <bean name="teacher" class="Spring.bean2.ProgramTeacher"/>
-    <bean name="student" class="Spring.bean2.Student">
+    <!-- <bean name="teacher" class="Spring.SpringIoC.bean2.ProgramStudent"/>
+    <bean name="student" class="Spring.SpringIoC.bean2.Student">
         <constructor-arg name="name" value="小高"/>
         <constructor-arg name="teacher" ref="teacher"/>
     </bean> -->
 
-    <!-- <bean name="student" class="Spring.bean2.Student">
+    <!-- <bean name="student" class="Spring.SpringIoC.bean2.Student">
         <property name="list">
             <list>
                 <value>AAA</value>
@@ -26,7 +26,7 @@
         </property>
     </bean> -->
 
-    <bean name="student" class="Spring.bean2.Student">
+    <bean name="student" class="Spring.SpringIoC.bean2.Student">
         <property name="map">
             <map>
                 <entry key="语文" value="100.0"/>

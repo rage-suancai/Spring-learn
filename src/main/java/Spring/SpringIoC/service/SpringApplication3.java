@@ -1,12 +1,12 @@
-package Spring.service;
+package Spring.SpringIoC.service;
 
-import Spring.bean3.Student;
+import Spring.SpringIoC.bean3.Student;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SpringApplication3 {
 
-    static ApplicationContext context = new ClassPathXmlApplicationContext("application3.xml");
+    static ApplicationContext context = new ClassPathXmlApplicationContext("SpringIoC/application3.xml");
 
     public static void main(String[] args) {
 

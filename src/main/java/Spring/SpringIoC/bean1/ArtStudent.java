@@ -1,4 +1,4 @@
-package Spring.bean1;
+package Spring.SpringIoC.bean1;
 
 public class ArtStudent extends Student {
 

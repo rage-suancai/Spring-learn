@@ -1,4 +1,4 @@
-package Spring.bean3;
+package Spring.SpringIoC.bean2;
 
 public interface Teacher {
 

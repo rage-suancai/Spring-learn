@@ -1,4 +1,4 @@
-package Spring.bean2;
+package Spring.SpringIoC.bean2;
 
 import lombok.ToString;
 
@@ -8,8 +8,8 @@ import java.util.Map;
 @ToString
 public class Student {
 
-    String name;
-    Teacher teacher;
+    private String name;
+    private Teacher teacher;
     List<String> list;
     Map<String, Double> map;
 

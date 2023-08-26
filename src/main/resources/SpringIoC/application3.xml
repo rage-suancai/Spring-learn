@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- <bean name="teacher" class="Spring.SpringIoC.bean3.ProgramStudent"/>
+    <bean name="student" class="Spring.SpringIoC.bean3.Student" autowire="byType"/> -->
+
+    <!-- <bean name="program" class="Spring.SpringIoC.bean3.ProgramStudent"/>
+    <bean name="art" class="Spring.SpringIoC.bean3.ArtStudent"/>
+    <bean name="student" class="Spring.SpringIoC.bean3.Student" autowire="byName"/> -->
+
+    <!-- <bean name="teacher" class="Spring.SpringIoC.bean3.ProgramStudent"/>
+    <bean name="student" class="Spring.SpringIoC.bean3.Student" autowire="constructor"/> -->
+
+    <!-- <bean name="program" class="Spring.SpringIoC.bean3.ProgramStudent"/>
+    <bean name="art" class="Spring.SpringIoC.bean3.ArtStudent" autowire-candidate="false"/>
+    <bean name="student" class="Spring.SpringIoC.bean3.Student" autowire="byType"/> -->
+
+    <bean name="program" class="Spring.SpringIoC.bean3.ProgramTeacher"/>
+    <bean name="art" class="Spring.SpringIoC.bean3.ArtTeacher" primary="true"/>
+    <bean name="student" class="Spring.SpringIoC.bean3.Student" autowire="byType"/>
+
+</beans>

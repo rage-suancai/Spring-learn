@@ -1,14 +1,11 @@
-package Spring.bean3;
+package Spring.SpringIoC.bean3;
 
 import lombok.ToString;
-
-import java.util.List;
-import java.util.Map;
 
 @ToString
 public class Student {
 
-    Teacher teacher;
+    private Teacher teacher;
 
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;

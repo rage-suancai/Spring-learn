@@ -1,4 +1,4 @@
-package Spring.bean3;
+package Spring.SpringIoC.bean3;
 
 public class ArtTeacher implements Teacher {
 

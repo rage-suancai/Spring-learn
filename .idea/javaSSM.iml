@@ -12,6 +12,12 @@
         <fileset id="fileset3" name="Application3" removed="false">
           <file>file://$MODULE_DIR$/src/main/resources/application3.xml</file>
         </fileset>
+        <fileset id="fileset4" name="application4" removed="false">
+          <file>file://$MODULE_DIR$/src/main/resources/application4.xml</file>
+        </fileset>
+        <fileset id="fileset5" name="application5" removed="false">
+          <file>file://$MODULE_DIR$/src/main/resources/IOC/application5.xml</file>
+        </fileset>
       </configuration>
     </facet>
   </component>
