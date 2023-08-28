@@ -18,6 +18,9 @@
         <fileset id="fileset5" name="application5" removed="false">
           <file>file://$MODULE_DIR$/src/main/resources/IOC/application5.xml</file>
         </fileset>
+        <fileset id="fileset6" name="SpringConfiguration" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/SpringIoC/config/SpringConfiguration.java</file>
+        </fileset>
       </configuration>
     </facet>
   </component>
