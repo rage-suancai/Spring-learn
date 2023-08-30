@@ -18,8 +18,20 @@
         <fileset id="fileset5" name="application5" removed="false">
           <file>file://$MODULE_DIR$/src/main/resources/IOC/application5.xml</file>
         </fileset>
-        <fileset id="fileset6" name="SpringConfiguration" removed="false">
-          <file>file://$MODULE_DIR$/src/main/java/Spring/SpringIoC/config/SpringConfiguration.java</file>
+        <fileset id="fileset6" name="SpringConfiguration1" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/SpringIoC/bean6/SpringConfiguration.java</file>
+        </fileset>
+        <fileset id="fileset7" name="SpringConfiguration2" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/AdvancedFeatures/Aware/SpringConfiguration.java</file>
+        </fileset>
+        <fileset id="fileset8" name="SpringConfiguration3" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/AdvancedFeatures/TaskScheduling/SpringConfiguration.java</file>
+        </fileset>
+        <fileset id="fileset9" name="SpringConfiguration4" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/AdvancedFeatures/Listener/SpringConfiguration.java</file>
+        </fileset>
+        <fileset id="fileset10" name="SpringConfiguration5" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/SpringEL/SpringConfiguration.java</file>
         </fileset>
       </configuration>
     </facet>
