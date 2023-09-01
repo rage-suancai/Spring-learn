@@ -33,6 +33,12 @@
         <fileset id="fileset10" name="SpringConfiguration5" removed="false">
           <file>file://$MODULE_DIR$/src/main/java/Spring/SpringEL/SpringConfiguration.java</file>
         </fileset>
+        <fileset id="fileset11" name="SpringConfiguration6" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/SpringEL/EasyToUse/SpringConfiguration.java</file>
+        </fileset>
+        <fileset id="fileset12" name="SpringConfiguration7" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/SpringEL/CollectionRelatedUsage/SpringConfiguration.java</file>
+        </fileset>
       </configuration>
     </facet>
   </component>
