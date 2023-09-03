@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- <bean class="Spring.SpringAOP.bean1.Student"/>
+    <bean id="studentAOP" class="Spring.SpringAOP.bean1.StudentAOP"/>
+    <aop:config>
+        <aop:pointcut id="after1" expression="execution(public void Spring.SpringAOP.bean1.Student.study1())"/>
+        <aop:aspect ref="studentAOP">
+            <aop:after method="afterStudy1" pointcut-ref="after1"/>
+        </aop:aspect>
+    </aop:config> -->
+
+    <!-- <bean class="Spring.SpringAOP.bean1.Student"/>
+    <bean id="studentAOP" class="Spring.SpringAOP.bean1.StudentAOP"/>
+    <aop:config>
+        <aop:pointcut id="after2" expression="execution(* Spring.SpringAOP.bean1.Student.study2(String))"/>
+        <aop:aspect ref="studentAOP">
+            <aop:around method="around1" pointcut-ref="after2"/>
+        </aop:aspect>
+    </aop:config> -->
+
+    <bean class="Spring.SpringAOP.bean1.Student"/>
+    <bean id="studentAOP" class="Spring.SpringAOP.bean1.StudentAOP"/>
+    <aop:config>
+        <aop:pointcut id="after3" expression="execution(* Spring.SpringAOP.bean1.Student.study3(String))"/>
+        <aop:aspect ref="studentAOP">
+            <aop:around method="around2" pointcut-ref="after3"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>

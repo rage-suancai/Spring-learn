@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean class="Spring.SpringAOP.bean2.Student"/>
+    <bean id="studentAOP" class="Spring.SpringAOP.bean2.StudentAOP"/>
+    <aop:config>
+        <aop:pointcut id="study" expression="execution(* Spring.SpringAOP.bean2.Student.study(String))"/>
+        <aop:pointcut id="task" expression="execution(* Spring.SpringAOP.bean2.Student.task(Runnable))"/>
+        <aop:advisor advice-ref="studentAOP" pointcut-ref="study"/>
+    </aop:config>
+
+</beans>

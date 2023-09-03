@@ -3,21 +3,6 @@
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
       <configuration>
-        <fileset id="fileset2" name="Application2" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/application2.xml</file>
-        </fileset>
-        <fileset id="fileset" name="Application1" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/application1.xml</file>
-        </fileset>
-        <fileset id="fileset3" name="Application3" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/application3.xml</file>
-        </fileset>
-        <fileset id="fileset4" name="application4" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/application4.xml</file>
-        </fileset>
-        <fileset id="fileset5" name="application5" removed="false">
-          <file>file://$MODULE_DIR$/src/main/resources/IOC/application5.xml</file>
-        </fileset>
         <fileset id="fileset6" name="SpringConfiguration1" removed="false">
           <file>file://$MODULE_DIR$/src/main/java/Spring/SpringIoC/bean6/SpringConfiguration.java</file>
         </fileset>
@@ -38,6 +23,15 @@
         </fileset>
         <fileset id="fileset12" name="SpringConfiguration7" removed="false">
           <file>file://$MODULE_DIR$/src/main/java/Spring/SpringEL/CollectionRelatedUsage/SpringConfiguration.java</file>
+        </fileset>
+        <fileset id="fileset13" name="ApplicationAOP1" removed="false">
+          <file>file://$MODULE_DIR$/src/main/resources/SpringAOP/application1.xml</file>
+        </fileset>
+        <fileset id="fileset14" name="ApplicationAOP2" removed="false">
+          <file>file://$MODULE_DIR$/src/main/resources/SpringAOP/application2.xml</file>
+        </fileset>
+        <fileset id="fileset15" name="SpringConfigurationAOP1" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/SpringAOP/bean3/SpringConfiguration.java</file>
         </fileset>
       </configuration>
     </facet>
