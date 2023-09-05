@@ -33,6 +33,12 @@
         <fileset id="fileset15" name="SpringConfigurationAOP1" removed="false">
           <file>file://$MODULE_DIR$/src/main/java/Spring/SpringAOP/bean3/SpringConfiguration.java</file>
         </fileset>
+        <fileset id="fileset" name="BeanConfiguration1" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/Mybatis/configuration/BeanConfiguration.java</file>
+        </fileset>
+        <fileset id="fileset2" name="BeanConfiguration2" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/Spring/Mybatis/configuration/BeanConfiguration2.java</file>
+        </fileset>
       </configuration>
     </facet>
   </component>

@@ -9,8 +9,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @Configuration
 public class SpringConfiguration {
 
-    public void study() {
-        System.out.println();
-    }
+
 
 }
