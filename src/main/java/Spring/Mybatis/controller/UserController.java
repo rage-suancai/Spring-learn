@@ -3,8 +3,6 @@ package Spring.Mybatis.controller;
 import Spring.Mybatis.configuration.BeanConfiguration1;
 import Spring.Mybatis.mapper.UserMapper;
 import Spring.Mybatis.service.TestService;
-import Spring.Mybatis.service.UserService;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -18,7 +16,7 @@ public class UserController {
 
         //test1();
         //test2();
-        test2();
+        test3();
 
     }
 
