@@ -14,12 +14,27 @@ public class TestServiceImpl implements TestService {
 
     @Transactional
     @Override
-    public void test() {
+    public void test1() {
 
         testmapper.insertStudent();
         if (true) throw new RuntimeException("我是测试异常");
         testmapper.insertStudent();
 
+    }
+
+
+    @Transactional
+    @Override
+    public void test2() {
+
+        test3();
+        if (true) throw new RuntimeException("我是测试异常");
+
+    }
+    @Transactional
+    @Override
+    public void test3() {
+        testmapper.insertStudent();
     }
 
 }

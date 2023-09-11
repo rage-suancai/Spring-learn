@@ -15,8 +15,7 @@ public class UserController {
     public static void main(String[] args) {
 
         //test1();
-        //test2();
-        test3();
+        test2();
 
     }
 
@@ -29,14 +28,10 @@ public class UserController {
     }
 
     static void test2() {
-        log.info("🙂");
-    }
-
-    static void test3() {
 
         log.info("项目正在启动...");
         TestService service = context.getBean(TestService.class);
-        service.test();
+        service.test1();
 
     }
 
