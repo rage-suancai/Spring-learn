@@ -1,4 +1,4 @@
-package Spring.Mybatis.configuration;
+package Spring.Mybatis.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;

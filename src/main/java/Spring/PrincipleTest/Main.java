@@ -1,11 +1,14 @@
 package Spring.PrincipleTest;
 
+import Spring.PrincipleTest.config.MainConfiguration;
 import Spring.PrincipleTest.entity.Student;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class Main {
 
@@ -13,7 +16,8 @@ public class Main {
 
         //test1();
         //test2();
-        test3();
+        //test3();
+        //test4();
 
     }
 
@@ -57,5 +61,12 @@ public class Main {
     static class A { }
     static class B { }
     static class C { }
+
+    static void test4() {
+
+        ApplicationContext context = new AnnotationConfigApplicationContext(MainConfiguration.class);
+        System.out.println(context.getBean(Student.class));
+
+    }
 
 }

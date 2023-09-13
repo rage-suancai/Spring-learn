@@ -1,6 +1,6 @@
 package Spring.Mybatis.controller;
 
-import Spring.Mybatis.configuration.BeanConfiguration1;
+import Spring.Mybatis.config.BeanConfiguration1;
 import Spring.Mybatis.mapper.UserMapper;
 import Spring.Mybatis.service.TestService;
 import lombok.extern.slf4j.Slf4j;

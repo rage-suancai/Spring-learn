@@ -327,22 +327,529 @@
 接着我们来介绍一下PostProcessor 它其实是Spring提供的一种后置处理机制 它可以让我们能够插手Bean, BeanFactory, BeanDefinition的创建过程
 相当于进行一个最终的处理 而最后得到的结果(比如Bean实例, Bean定义等) 就是经过后置处理器返回的结果 它是整个加载过程的最后一步
 
+而AOP机制正是通过它来实现的 我们首先来认识一下第一个接口BeanPostProcessor 它相当于Bean初始化的一个后置动作 我们可以直接实现此接口:
 
+```java
+                    // 注意它后置处理器也要进行注册
+                    @Component
+                    public class TestBeanProcessor implements BeanPostProcessor {
+    
+                        @Override
+                        public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+                            // 打印bean的名称
+                            System.out.println(beanName); return bean;
+                        }
+                    
+                        @Override
+                        public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+                            return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
+                        }
+                        
+                    }
+```
 
+我们发现 此接口中包括两个方法 一个是postProcessAfterInitialization用于在Bean初始化之后进行处理
+还有一个postProcessBeforeInitialization用于在Bean初始化之前进行处理 注意这里的初始化不是创建对象 而是调用类的初始化方法 比如:
 
+```java
+                    @Component
+                    public class TestBeanProcessor implements BeanPostProcessor {
+    
+                        @Override
+                        public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+                            
+                            System.out.println("我是之后: " + beanName);
+                            return bean; // 这里返回的Bean相当于最终的结果了 我们依然能够插手修改 这里返回之后是什么就是什么了
+                            
+                        }
+                    
+                        @Override
+                        public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+                            
+                            System.out.println("我是之前: " + beanName);
+                            return bean; // 这里返回的Bean会交给下一个阶段 也就是初始化方法
+                            
+                        }
+                        
+                    }
+```
+```java
+                    @Component
+                    public class TestServiceImpl implements TestService {
+                    
+                        public TestServiceImpl(){
+                            System.out.println("我是构造方法");
+                        }
+                    
+                        @PostConstruct
+                        public void init(){
+                            System.out.println("我是初始化方法");
+                        }
+                    
+                        TestMapper mapper;
+                    
+                        @Autowired
+                        public void setMapper(TestMapper mapper) {
+                            System.out.println("我是依赖注入"); this.mapper = mapper;
+                        }
+                      	
+                      	    ...
+```
 
+而TestServiceImpl的加载顺序为:
 
+    我是构造方法
+    我是依赖注入
+    我是之前：testServiceImpl
+    我是初始化方法
+    我是之后：testServiceImpl
 
+现在我们再来总结一下一个Bean的加载流程:
 
+[Bean定义]首先扫描Bean,加载Bean定义 -> [依赖注入]根据Bean定义通过反射创建Bean实例 -> [依赖注入]进行依赖注入(顺便解决循环依赖问题)
+-> [初始化Bean]BeanPostProcessor的初始化之前方法 -> [初始化Bean]Bean初始化方法 -> [初始化Bean]BeanPostProcessor的初始化之后方法 -> [完成]最终得到的Bean加载完成的实例
 
+利用这种机制 理解AOP的实现过程就非常简单了 AOP实际上也是通过这种机制实现的 它的实现类是AnnotationAwareAspectJAutoProxyCreator
+而它就是在最后对Bean进行了代理 因此最后我们得到的结果实际上就是一个动态代理的对象(有关详细实现过程 这里就不进行例举了 感兴趣的可以继续深入)
+因此 实际上之前设计的三层缓存 都是由于需要处理AOP设计的 因为在Bean创建得到最终对象之前 还有可能会被PostProcessor给偷梁换柱
 
+那么肯定有人有疑问了 这个类没有被注册啊 那按理说它不应该参与到Bean的初始化流程中的 为什么它直接就被加载了呢?
 
+还记得@EnableAspectJAutoProxy吗? 我们来看看它是如何定义的就知道了:
 
+```java
+                    @Target({ElementType.TYPE})
+                    @Retention(RetentionPolicy.RUNTIME)
+                    @Documented
+                    @Import({AspectJAutoProxyRegistrar.class})
+                    public @interface EnableAspectJAutoProxy {
+                        boolean proxyTargetClass() default false;
+                    
+                        boolean exposeProxy() default false;
+                    }
+```
 
+我们发现它使用了@Import来注册AspectJAutoProxyRegistrar 那么这个类又是什么呢? 我们接着来看:
 
+```java
+                    class AspectJAutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
+                        AspectJAutoProxyRegistrar() {
+                        }
+                    
+                        public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+                          	// 注册AnnotationAwareAspectJAutoProxyCreator到容器中
+                            AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry);
+                            AnnotationAttributes enableAspectJAutoProxy = AnnotationConfigUtils.attributesFor(importingClassMetadata, EnableAspectJAutoProxy.class);
+                            if (enableAspectJAutoProxy != null) {
+                                if (enableAspectJAutoProxy.getBoolean("proxyTargetClass")) {
+                                    AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
+                                }
+                    
+                                if (enableAspectJAutoProxy.getBoolean("exposeProxy")) {
+                                    AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);
+                                }
+                            }
+                    
+                        }
+                    }
+```
 
+它实现了接口 这个接口也是Spring提供的一种Bean加载机制 它支持直接向容器中添加Bean定义 容器也会加载这个Bean:
+- ImportBeanDefinitionRegistrar类只能通过其他类@Import的方式来加载 通常是启动类或配置类
+- 使用@Import 如果括号中的类是ImportBeanFefinitionRegistra的实现类 则会调用接口中方法(一般用于注册Bean)
+- 实现该接口的类拥有注册Bean的能力
 
+我们可以看到此接口提供了一个BeanDefinitionRegistry正是用于注册Bean的定义的
 
+因此 当我们打上了@EnableAspectJAutoProxy注解之后 首先会通过@Import加载AspectJAutoProxyRegistrar 然后调用其registerBeanDefinitions方法
+然后使用工具类注册AnnotationAwareAspectJAutoProxyCreator到容器中 这样在每个Bean创建之后 如果需要使用AOP 那么就会通过AOP的后置处理器进行处理 最后返回一个代理对象
 
+我们也可以尝试编写一个自己的ImportBeanDefinitionRegistrar实现 首先编写一个测试Bean:
 
+```java
+                    public class TestBean {
+    
+                        @PostConstruct
+                        void init(){
+                            System.out.println("我被初始化了");
+                        }
+                        
+                    }
+```
+```java
+                    public class TestBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
+                        @Override
+                        public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+                            
+                            BeanDefinition definition = BeanDefinitionBuilder.rootBeanDefinition(Student.class).getBeanDefinition();
+                            registry.registerBeanDefinition("lbwnb", definition);
+                            
+                        }
+                        
+                    }
+```
+
+观察控制台输出 成功加载Bean实例
+
+与BeanPostProcessor差不多的还有BeanFactoryPostProcessor 它和前者一样 也是用于我们自己处理后置动作的 不过这里是用于处理BeanFacrory加载的后置动作
+BeanDefinitionRegistryPostProcessor直接继承自BeanFactoryPostProcessor 并且还添加了新的动作postProcessBeanFefinitionRegistry
+你可以在这里动态添加Bean定义或是修改已经存在的Bean定义 这里我们就直接演示BeanFefinitionRegistryPostProcessor的实现:
+
+```java
+                    @Component
+                    public class TestDefinitionProcessor implements BeanDefinitionRegistryPostProcessor {
+    
+                        @Override
+                        public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+                            
+                            System.out.println("我是Bean定义后置处理");
+                            BeanDefinition definition = BeanDefinitionBuilder.rootBeanDefinition(TestBean.class).getBeanDefinition();
+                            registry.registerBeanDefinition("lbwnb", definition);
+                            
+                        }
+                    
+                        @Override
+                        public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
+                            System.out.println("我是Bean工厂后置处理");
+                        }
+                        
+                    }
+```
+
+在这里注册Bean定义其实和之前那种方法效果一样
+
+最后 我们再完善一下Bean加载流程(加粗部分是新增的):
+
+[Bean定义]首先扫描Bean,加载Bean定义 -> **[Bean定义]Bean定义和Bean工厂后置处理** -> [依赖注入]根据Bean定义通过反射创建Bean实例 -> [依赖注入]进行依赖注入(顺便解决循环依赖问题)
+-> [初始化Bean]BeanPostProcessor的初始化之前方法 -> [初始化Bean]Bean初始化方法 -> [初始化Bean]BeanPostProcessor的初始化之后方法 -> [完成]最终得到的Bean加载完成的实例
+
+### 应用程序上下文详解
+前面我们详细介绍了BeanFactory是如何工作的 接着我们来研究一下ApplicationContext的内部 实际上我们真正在项目中使用的就是ApplicationContext的实现 那么它又是如何工作的呢
+
+```java
+                    public interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, HierarchicalBeanFactory, MessageSource, ApplicationEventPublisher, ResourcePatternResolver {
+                    	@Nullable
+                    	String getId();
+                    	String getApplicationName();
+                    	String getDisplayName();
+                    	long getStartupDate();
+                    	@Nullable
+                    	ApplicationContext getParent();
+                    	AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException;
+                    }
+```
+
+它本身是一个接口 同时集成了多种类型的BeanFactory接口 说明它应该具有这些BeanFactory的能力 实际上我们在前面已经提到过
+ApplciationContext是依靠内部维护的BeanFactory对象来完成这些功能的 并不是它本身就实现了这些功能
+
+这里我们就先从构造方法开始走起 以我们常用的AnnotationConfigApplicationContext为例:
+
+```java
+                    public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+                    		this();                      // 1.首先会调用自己的无参构造
+                    		register(componentClasses);  // 2.然后注册我们传入的配置类
+                    		refresh();                   // 3.最后进行刷新操作(关键)
+                    }
+```
+
+先来看第一步:
+
+```java
+                    public GenericApplicationContext() {
+                      	// 父类首先初始化内部维护的BeanFactory对象
+                    	this.beanFactory = new DefaultListableBeanFactory();
+                    }
+```
+```java
+                    public AnnotationConfigApplicationContext() {
+                        StartupStep createAnnotatedBeanDefReader = this.getApplicationStartup().start("spring.context.annotated-bean-reader.create");
+                      	// 创建AnnotatedBeanDefinitionReader对象 用于后续处理@Bean注解
+                    	this.reader = new AnnotatedBeanDefinitionReader(this);
+                    	createAnnotatedBeanDefReader.end();
+                      	// 创建ClassPathBeanDefinitionScanner对象 用于扫描类路径上的Bean
+                    	this.scanner = new ClassPathBeanDefinitionScanner(this);
+                    }
+```
+
+这样 AnnotaionConfigApplicaitonContext的基本内容就初始化好了 不过这里结束之后将ConfigurationClassPostProcessor后置处理器加入到BeanFactory中
+它继承自BeanFactoryPostProcessor 也就是说一会会在BeanFactory初始化完成之后进行后置处理:
+
+```java
+                    public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry, Environment environment) {
+                    	Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+                    	Assert.notNull(environment, "Environment must not be null");
+                    	this.registry = registry;
+                    	this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
+                      	// 这里注册了注解处理配置相关的后置处理器
+                    	AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
+                    }
+```
+
+实际上这个后置处理器的主要目的就是为了读取配置类中的各种定义以及其他注解 比如@Import, @ComponentScan等
+
+同时这里也会注册一个AutowiredAnnotationBeanPostProcessor后置处理器到BeanFactory 它继承自BeanPostProcessor
+用于处理后续生成的Bean对象 其实看名字就知道 这玩意就是为了处理@Autowire, @Value这种注解 用于自动注入 这里就不深入讲解具体实现了
+
+所以 第一步结束之后 就会有这两个关键的后置处理器放在容器中:
+
+<img src="https://image.itbaima.net/markdown/2023/07/19/uY4zwEhArUMfP2d.png"/>
+
+接着是第二个 注册配置类:
+
+```java
+                    @Override
+                    public void register(Class<?>... componentClasses) {
+                    	Assert.notEmpty(componentClasses, "At least one component class must be specified");
+                    	StartupStep registerComponentClass = this.getApplicationStartup().start("spring.context.component-classes.register")
+                    				    .tag("classes", () -> Arrays.toString(componentClasses));
+                      	// 使用我们上面创建的Reader注册配置类
+                    	this.reader.register(componentClasses);
+                    	registerComponentClass.end();
+                    }
+```
+
+现在配置类已经成功注册到IoC容器中了 我们接着来看第三步 到目前为止 我们已知的仅仅是注册了配置类的Bean
+而刷新操作就是配置所有Bean的关键部分了 刷新操作是在AbstractApplicationContext中实现的:
+
+```java
+                    @Override
+                    public void refresh() throws BeansException, IllegalStateException {
+                    		synchronized (this.startupShutdownMonitor) {
+                    			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
+                    			// 准备当前应用程序上下文 进行刷新,设置启动事件和活动标志以及执行其他初始化
+                    			prepareRefresh();
+                    			// 这个方法由子类实现 对内部维护的BeanFactory进行刷新操作 然后返回这个BeanFactory
+                    			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+                    			// 初始化配置Bean工厂 比如一些会用到的类加载器和后置处理器
+                    			prepareBeanFactory(beanFactory);
+                    			try {
+                    				// 由子类实现对BeanFactory的其他后置处理 目前没有看到有实现
+                    				postProcessBeanFactory(beanFactory);
+                    				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
+                    				// 实例化并调用所有注册的BeanFactoryPostProcessor类型的Bean
+                                    // 这一步中 上面提到的BeanFactoryPostProcessor就开始工作了 比如包扫描,解析Bean配置等
+                                    // 这一步结束之后 包扫描到的其他Bean就注册到BeanFactory中了
+                    				invokeBeanFactoryPostProcessors(beanFactory);
+                    				// 实例化并注册所有BeanPostProcessor类型的Bean 不急着执行
+                    				registerBeanPostProcessors(beanFactory);
+                    				beanPostProcess.end();
+                    				initMessageSource();
+                    				initApplicationEventMulticaster();
+                    				// 依然是提供给子类实现的 目的是用于处理一些其他比较特殊的Bean 目前似乎也没看到有实现
+                    				onRefresh();
+                    				// 注册所有的监听器
+                    				registerListeners();
+                    				// 将剩余所有非懒加载单例Bean全部实例化
+                    				finishBeanFactoryInitialization(beanFactory);
+                    				finishRefresh();
+                    			} catch (BeansException ex) {
+                    				...
+                    				// 发现异常直接销毁所有Bean
+                    				destroyBeans();
+                    				// 取消本次刷新操作 重置标记
+                    				cancelRefresh(ex);
+                    				// 继续往上抛异常
+                    				throw ex;
+                    			} finally {
+                    				resetCommonCaches();
+                    				contextRefresh.end();
+                    			}
+                    		}
+                    }
+```
+
+所以 现在流程就很明确了 实际上最主要的就是refresh方法 它从初始化到实例化所有的Bean整个流程都已经完成 在这个方法结束之后 整个IoC容器基本就可以正常使用了
+
+我们继续来研究一下finishBeanFactoryInitialization方法 看看它是怎么加载所有Bean的:
+
+```java
+                    protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+                    		...
+                    		beanFactory.preInstantiateSingletons(); // 套娃
+                    }
+```
+```java
+                    @Override
+                    	public void preInstantiateSingletons() throws BeansException {
+                    		...
+                            // 列出全部bean名称
+                    		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
+                    		// 开始初始化所有Bean
+                    		for (String beanName : beanNames) {
+                                // 得到Bean定义
+                    			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+                                // Bean不能是抽象类,不能是非单例模式,不能是懒加载的
+                    			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+                                    // 针对于Bean和FactoryBean分开进行处理
+                    				if (isFactoryBean(beanName)) {
+                    					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
+                    					if (bean instanceof SmartFactoryBean<?> smartFactoryBean && smartFactoryBean.isEagerInit()) {
+                    						getBean(beanName);
+                    					}
+                    				} else {
+                    					getBean(beanName); // 最后都是通过调用getBean方法来初始化实例 这里就跟我们之前讲的连起来了
+                    				}
+                    			}
+                    		}
+                    
+                    		...
+                    }
+```
+
+至此 关于Spring容器核心加载流程 我们就探究完毕了 实际上简单易懂 就是代码量太大了 在后续的SpringBoot阶段 我们还会继续深挖Spring的某些机制的具体实现细节
+
+### Mybatis整合原理
+通过之前的了解 我们再来看Mybatis的@MapperScan是如何实现的 现在理解起来就非常简单了
+
+我们可以直接打开查看:
+
+```java
+                    @Retention(RetentionPolicy.RUNTIME)
+                    @Target({ElementType.TYPE})
+                    @Documented
+                    @Import({MapperScannerRegistrar.class})
+                    @Repeatable(MapperScans.class)
+                    public @interface MapperScan {
+                        String[] value() default {};
+                    
+                        String[] basePackages() default {};
+                      	    ... 
+```
+
+我们发现 和AOP一样 它也是通过Registrar机制 通过@Import来进行Bean的注册 我们来看看MapperScannerRegistrar是个什么东西 关键代码如下:
+
+```java
+                    void registerBeanDefinitions(AnnotationMetadata annoMeta, AnnotationAttributes annoAttrs, BeanDefinitionRegistry registry, String beanName) {
+                        BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MapperScannerConfigurer.class);
+                        builder.addPropertyValue("processPropertyPlaceHolders", true);
+                        ...
+                    }
+```
+
+虽然很长很多 但是这些代码都是在添加一些Bean定义的属性 而最关键的则是最上方的MapperScannerConfigurer Mybatis将其Bean信息注册到了容器中 那么这个类又是干嘛的呢?
+
+```java
+                    public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
+                        private String basePackage;
+```
+
+它实现了BeanDefinitionRegistryPostProcessor 也就是说它为Bean信息加载提供了后置处理 我们接着来看看它在Bean信息后置处理中做了什么:
+
+```java
+                    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+                        if (this.processPropertyPlaceHolders) {
+                            this.processPropertyPlaceHolders();
+                        }
+                    
+                      	// 初始化类路径Mapper扫描器 它相当于是一个工具类 可以快速扫描出整个包下的类定义信息
+                      	// ClassPathMapperScanner是Mybatis自己实现的一个扫描器 修改了一些扫描规则
+                        ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
+                        scanner.setAddToConfig(this.addToConfig);
+                        scanner.setAnnotationClass(this.annotationClass);
+                        scanner.setMarkerInterface(this.markerInterface);
+                        scanner.setSqlSessionFactory(this.sqlSessionFactory);
+                        scanner.setSqlSessionTemplate(this.sqlSessionTemplate);
+                        scanner.setSqlSessionFactoryBeanName(this.sqlSessionFactoryBeanName);
+                        scanner.setSqlSessionTemplateBeanName(this.sqlSessionTemplateBeanName);
+                        scanner.setResourceLoader(this.applicationContext);
+                        scanner.setBeanNameGenerator(this.nameGenerator);
+                        scanner.setMapperFactoryBeanClass(this.mapperFactoryBeanClass);
+                        if (StringUtils.hasText(this.lazyInitialization)) {
+                            scanner.setLazyInitialization(Boolean.valueOf(this.lazyInitialization));
+                        }
+                    
+                        if (StringUtils.hasText(this.defaultScope)) {
+                            scanner.setDefaultScope(this.defaultScope);
+                        }
+                    
+                      	// 添加过滤器 这里会配置为所有的接口都能被扫描(因此即使你不添加@Mapper注解都能够被扫描并加载)
+                        scanner.registerFilters();
+                      	// 开始扫描
+                        scanner.scan(StringUtils.tokenizeToStringArray(this.basePackage, ",; \t\n"));
+                    }
+```
+
+开始扫描后 会调用doScan()方法 我们接着来看(这是ClassPathMapperScanner中的扫描方法):
+
+```java
+                    public Set<BeanDefinitionHolder> doScan(String... basePackages) {
+                        Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
+                      	// 首先从包中扫描所有的Bean定义
+                        if (beanDefinitions.isEmpty()) {
+                            LOGGER.warn(() -> {
+                                return "No MyBatis mapper was found in '" + Arrays.toString(basePackages) + "' package. Please check your configuration.";
+                            });
+                        } else {
+                          	// 处理所有的Bean定义 实际上就是生成对应Mapper的代理对象 并注册到容器中
+                            this.processBeanDefinitions(beanDefinitions);
+                        }
+                    
+                      	// 最后返回所有的Bean定义集合
+                        return beanDefinitions;
+                    }
+```
+
+通过断点我们发现 最后处理得到的Bean定义发现此Bean是一个MapperFactoryBean 它不同于普通的Bean,
+FactoryBean相当于为普通的Bean添加了一层外壳 它并不是依靠Spring直接通过反射创建 而是使用接口中的方法:
+
+```java
+                    public interface FactoryBean<T> {
+                        String OBJECT_TYPE_ATTRIBUTE = "factoryBeanObjectType";
+                    
+                        @Nullable
+                        T getObject() throws Exception;
+                    
+                        @Nullable
+                        Class<?> getObjectType();
+                    
+                        default boolean isSingleton() {
+                            return true;
+                        }
+                    }
+```
+
+通过getObject()方法 就可以获取到Bean的实例了
+
+注意这里一定要区分FactoryBean和BeanFactory的概念:
+- BeanFactory是个Factory 也就是IoC容器或对象工厂 所有的Bean都是由BeanFactory(也就是IoC容器)来进行管理
+- FactoryBean是一个能生产或者修饰生成对象的工厂Bean(本质上也是一个Bean) 可以在BeanFactory(IoC容器)中被管理 所以它并不是一个简单的Bean 当使用容器中FactoryBean的时候
+  该容器不会返回FactoryBean本身 而是返回其生成的对象 要想获取FactoryBean的实现类本身 得在getBean(String BeanName)中的BeanName之前加上&写成getBean(String &BeanName)
+
+我们也可以自己编写一个实现:
+
+```java
+                    @Component("test")
+                    public class TestFb implements FactoryBean<Student> {
+                        @Override
+                        public Student getObject() throws Exception {
+                            System.out.println("获取了学生");
+                            return new Student();
+                        }
+                    
+                        @Override
+                        public Class<?> getObjectType() {
+                            return Student.class;
+                        }
+                    }
+```
+```java
+                    public static void main(String[] args) {
+                        log.info("项目正在启动...");
+                        ApplicationContext context = new AnnotationConfigApplicationContext(TestConfiguration.class);
+                        System.out.println(context.getBean("&test")); // 得到FactoryBean本身(得加个&搞得像C语言指针一样)
+                        System.out.println(context.getBean("test")); // 得到FactoryBean调用getObject()之后的结果
+                    }
+```
+
+因此 实际上我们的Mapper最终就以FactotryBean的形式 被注册到容器中进行加载了
+
+```java
+                    public T getObject() throws Exception {
+                        return this.getSqlSession().getMapper(this.mapperInterface);
+                    }
+```
+
+这样 整个Mybatis的@MapperScan的原理就全部解释完毕了
+
+在了解完了Spring的底层原理之后 我们其实已经完全可以根据这些实现原理来手写一个Spring框架了

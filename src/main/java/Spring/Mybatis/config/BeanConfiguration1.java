@@ -1,4 +1,4 @@
-package Spring.Mybatis.configuration;
+package Spring.Mybatis.config;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
